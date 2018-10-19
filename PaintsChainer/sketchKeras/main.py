@@ -59,4 +59,4 @@ def get(path):
     return
 
 
-get('test.jpg')
+get('1.png')

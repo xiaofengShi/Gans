@@ -11,10 +11,14 @@ http://paintschainer.preferred.tech/
 
 ### 1.模型结构
 
-- 
+![paints](assets/paints.png)
+
+
+
 
 
 ## Requirement
+
 If not specified, versions are assumed to be recent LTS version.
 - A Nvidia graphic card supporting cuDNN i.e. compute capability >= 3.0 (See https://developer.nvidia.com/cuda-gpus)
 - Linux: gcc/ g++ 4.8

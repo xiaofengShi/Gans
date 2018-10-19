@@ -136,7 +136,16 @@ class ImageAndRefDataset(chainer.dataset.DatasetMixin):
 
 
 class Image2ImageDataset(chainer.dataset.DatasetMixin):
+    """  
+    paths：文件名列表
+    root1：输入的图像，为线稿图
+    root2：目标图像
 
+    return：
+        image1: 输入的线稿图
+        image2: 彩色目标图
+
+    """
     def __init__(
             self, paths, root1='./input', root2='./terget', dtype=np.float32, leak=(0, 0),
             root_ref=None, train=False):
@@ -272,6 +281,7 @@ class Image2ImageDataset(chainer.dataset.DatasetMixin):
 
 
 class Image2ImageDatasetX2(Image2ImageDataset):
+
 
     def get_example(self, i, minimize=False, log=False, bin_r=0):
         path1 = os.path.join(self._root1, self._paths[i])

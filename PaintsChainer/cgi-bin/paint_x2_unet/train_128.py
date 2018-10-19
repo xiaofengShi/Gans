@@ -25,6 +25,21 @@ chainer.cuda.set_max_workspace_size(1024 * 1024 * 1024)
 os.environ["CHAINER_TYPE_CHECK"] = "0"
 
 
+""" 程序说明：
+        - 训练数据：线稿图和对应的上色图片，对应的文件名相同，存储路径不同
+        - 网络结构：
+                UNET:
+                    input_shape：4，[batch，channel，height，width] 
+                    全卷积网络，U网络，图像进行下卷积之后上卷积，同尺寸上下卷积contact之后输出
+                DIS: 
+                    input_shape: 3
+                    全卷机网络，只有下卷积，
+                
+                LNET: 
+                    input_shape：3
+                    网络结构与UNET相同            
+        - 
+"""
 def main():
     parser = argparse.ArgumentParser(
         description='chainer line drawing colorization')
