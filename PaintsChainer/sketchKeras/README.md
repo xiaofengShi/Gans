@@ -1,4 +1,5 @@
 # sketchKeras
+This repo if forked from [💦💦](https://github.com/lllyasviel/sketchKeras)
 An u-net with some algorithm to take the sketch from a painting.
 
 # requirement
@@ -6,10 +7,10 @@ An u-net with some algorithm to take the sketch from a painting.
 * Opencv
 * tensorflow/theano
 * numpy
-
+* 
 # download mod
-see release
-
+- BaiduDisk🛠: link: https://pan.baidu.com/s/1o0gwWiJI2-7vzwbYiwfM8g  password:2g5x
+- GoogleDrive🛠: https://drive.google.com/open?id=1BQXmhS4223MV9z5e5G0HR0c4PLQgOAeG
 # performance
 Currently there are many edge-detecting algrithoms or nerual networks. But few of them has good performance on paintings, espatially those from comic or animate. Most of these existing methods just detect the edge and then add lines to the edge. However, we need a method to convert the painting to a sketch which looks like a painter drawed the outline of picture. It is important when we want to train a nerual networks to colorlize pictures.**(Paper is on the way)**
 

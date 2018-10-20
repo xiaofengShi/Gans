@@ -31,27 +31,33 @@ def change_size(read_file):
     # print(binary_image.shape)  # 改为单通道
     originshape = binary_image.shape
     # print('origin shape is:', originshape)
-    x = binary_image.shape[0]
-    y = binary_image.shape[1]
+    input_width = binary_image.shape[0]  # 宽度
+    input_height = binary_image.shape[1]  # 高度
     edges_x = []
     edges_y = []
 
-    for i in range(x):
-
-        for j in range(y):
-
+    for i in range(input_width):
+        for j in range(input_height):
             if binary_image[i][j] == 255:
                 # print("横坐标",i)
                 # print("纵坐标",j)
                 edges_x.append(i)
                 edges_y.append(j)
 
-    left = min(edges_x)  # 左边界
-    right = max(edges_x)  # 右边界
-    width = right-left  # 宽度
-
-    bottom = min(edges_y)  # 底部
-    top = max(edges_y)  # 顶部
+    if edges_x:
+        left = min(edges_x)  # 左边界
+        right = max(edges_x)  # 右边界
+    else:
+        left = 0
+        right = input_width
+    width = right - left  # 宽度
+    
+    if edges_y:
+        bottom = min(edges_y)  # 底部
+        top = max(edges_y)  # 顶部
+    else:
+        bottom = 0
+        top = input_height
     height = top-bottom  # 高度
 
     pre1_picture = image_ori[left:left+width, bottom:bottom+height, :]  # 图片截取
@@ -75,7 +81,7 @@ def SearchFiles(root_dir, text):
         print('ERROR：', e)
 
 
-def main(root_dir=None, child_dirname='512px',saved_dirname='saved_path'):
+def main(root_dir=None, child_dirname='512px', saved_dirname='saved_path'):
     global file_list
     if root_dir is None:
          # 获取当前文件路径
@@ -101,7 +107,7 @@ def main(root_dir=None, child_dirname='512px',saved_dirname='saved_path'):
     else:
         SearchFiles(img_path, ['.jpg', '.png'])
         # print(file_list[:10])
-        print('total nus is:', len(file_list))
+        print('total nums is:', len(file_list))
         with open(file_list_saved, 'wb') as fi:
             pickle.dump(file_list, fi)
 
@@ -109,7 +115,7 @@ def main(root_dir=None, child_dirname='512px',saved_dirname='saved_path'):
     for i in range(len(file_list)):
         # print('file name is: {:s}:'.format(file_list[i]))
         crop = change_size(file_list[i])  # 得到文件名
-        child_path = file_list[i].replace(img_path+'/','')
+        child_path = file_list[i].replace(img_path+'/', '')
         saved_file = os.path.join(saved_path, child_path)
         # 待保存文件主目录路径
         saved_dir = os.path.dirname(saved_file)
@@ -121,8 +127,8 @@ def main(root_dir=None, child_dirname='512px',saved_dirname='saved_path'):
         #     break
         if i % 100 == 0 and i != 0:
             mid_time = datetime.datetime.now()
-            mid_time=(mid_time-starttime).seconds
-            print('[{:^10d}] files completed and time cost is {:^010f}'.format(i,mid_time))
+            mid_time = (mid_time-starttime).seconds
+            print('[{:^10d}] files completed and time cost is {:^010f}'.format(i, mid_time))
     print("裁剪完毕")
     endtime = datetime.datetime.now()  # 记录结束时间
     endtime = (endtime-starttime).seconds

@@ -2,20 +2,15 @@
 Paints Chainer is a line drawing colorizer using chainer.
 Using CNN, you can colorize your sketch semi-automatically .
 
-![image](https://github.com/pfnet/PaintsChainer/blob/open/sample.png)
 
 ## DEMO
 http://paintschainer.preferred.tech/
 
 ## PIPELINE
 
-### 1.模型结构
+### 1.Model strueture
 
-![paints](assets/paints.png)
-
-
-
-
+<img src='assets/paints.png' width=90%  height=90% align=center >
 
 ## Requirement
 
