@@ -130,19 +130,28 @@ class ganUpdater(chainer.training.StandardUpdater):
         self._iter += 1
 
         batch = self.get_iterator('main').next()
+        """
+        image1.transpose(2, 0, 1),  # height,width,4 (yuv,128)
+        image2.transpose(2, 0, 1),  # height,width,3 (rgb,128)
+        _image1.transpose(2, 0, 1), # height,width (gray,512)
+        _image2.transpose(2, 0, 1)  # height,width (rgb,512)
+        """
         batchsize = len(batch)
 
         w_in = 128
         w_in_2 = 512
         w_out = 512
 
-        x_in = xp.zeros((batchsize, 4, w_in, w_in)).astype("f")
-        x_in_2 = xp.zeros((batchsize, 4, w_in_2, w_in_2)).astype("f")
-        t_out = xp.zeros((batchsize, 3, w_out, w_out)).astype("f")
+        x_in = xp.zeros((batchsize, 4, w_in, w_in)).astype("f") # 128
+        x_in_2 = xp.zeros((batchsize, 4, w_in_2, w_in_2)).astype("f") # 512
+        t_out = xp.zeros((batchsize, 3, w_out, w_out)).astype("f") # 512
 
         for i in range(batchsize):
-            x_in[i, :] = xp.asarray(batch[i][0])
-            x_in_2[i, 0, :] = xp.asarray(batch[i][2])
+            # batch_size,4,128,128
+            x_in[i,:] = xp.asarray(batch[i][0])  
+            # batch_size,4,512,512, channel_0 is the gray img
+            x_in_2[i, 0,:] = xp.asarray(batch[i][2]) 
+            
             for ch in range(3):
                 color_ch = cv2.resize(
                     batch[i][1][ch], (w_out, w_out), interpolation=cv2.INTER_CUBIC).astype("f")
@@ -152,7 +161,7 @@ class ganUpdater(chainer.training.StandardUpdater):
         x_in = Variable(x_in)
         t_out = Variable(t_out)
 
-        x_out = self.cnn_128.calc(x_in)
+        x_out = self.cnn_128.calc(x_in) # 128
         x_out = x_out.data.get()
 
         for j in range(batchsize):

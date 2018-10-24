@@ -4,6 +4,7 @@ from data import CreateDataLoader
 from models import create_model
 from util.visualizer import Visualizer
 
+
 if __name__ == '__main__':
     opt = TrainOptions().parse()
     data_loader = CreateDataLoader(opt)

@@ -42,6 +42,11 @@ def cvt2GRAY(img):
 
 
 class ImageAndRefDataset(chainer.dataset.DatasetMixin):
+    """  
+    RETURN:
+        image1: 4,4*ref_height,4*ref_width (GRAY), mix line and ref
+        image2: 1,height,width (gray_input_line)
+    """
 
     def __init__(self, paths, root1='./input', root2='./ref', dtype=np.float32):
         self._paths = paths
@@ -60,10 +65,14 @@ class ImageAndRefDataset(chainer.dataset.DatasetMixin):
         #image1 = ImageDataset._read_image_as_array(path1, self._dtype)
 
         #image1 = cv2.imread(path1, cv2.IMREAD_GRAYSCALE)
+
+        # read upload image and convert it to gray
+        # the image ndim is 2
         image1 = cv2.imread(path1, cv2.IMREAD_UNCHANGED)
         image1 = cvt2GRAY(image1)
 
         print("load:" + path1, os.path.isfile(path1), image1 is None)
+
         image1 = np.asarray(image1, self._dtype)
 
         _image1 = image1.copy()
@@ -146,6 +155,7 @@ class Image2ImageDataset(chainer.dataset.DatasetMixin):
         image2: 彩色目标图
 
     """
+
     def __init__(
             self, paths, root1='./input', root2='./terget', dtype=np.float32, leak=(0, 0),
             root_ref=None, train=False):
@@ -179,6 +189,11 @@ class Image2ImageDataset(chainer.dataset.DatasetMixin):
         return self._paths[i]
 
     def get_example(self, i, minimize=False, log=False, bin_r=0):
+        """  
+        return:
+            image1: 4,height,width (GRAY)
+            image2: 3,height,width (YUV)
+        """
         if self._train:
             bin_r = 0.9
 
@@ -208,6 +223,7 @@ class Image2ImageDataset(chainer.dataset.DatasetMixin):
                 image1, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
         # add flip and noise
+        # flip the img in random proportion
         if self._train:
             if np.random.rand() > 0.5:
                 image1 = cv2.flip(image1, 1)
@@ -218,7 +234,7 @@ class Image2ImageDataset(chainer.dataset.DatasetMixin):
 
         image1 = np.asarray(image1, self._dtype)
         image2 = np.asarray(image2, self._dtype)
-
+        # add noise
         if self._train:
             noise = np.random.normal(
                 0, 5 * np.random.rand(), image1.shape).astype(self._dtype)
@@ -240,7 +256,7 @@ class Image2ImageDataset(chainer.dataset.DatasetMixin):
         image1 = np.insert(image1, 2, 128, axis=2)
         image1 = np.insert(image1, 3, 128, axis=2)
 
-        # randomly add terget image px
+        # randomly add target image px
         if self._leak[1] > 0:
             image0 = image1
             n = np.random.randint(16, self._leak[1])
@@ -281,7 +297,6 @@ class Image2ImageDataset(chainer.dataset.DatasetMixin):
 
 
 class Image2ImageDatasetX2(Image2ImageDataset):
-
 
     def get_example(self, i, minimize=False, log=False, bin_r=0):
         path1 = os.path.join(self._root1, self._paths[i])

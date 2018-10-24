@@ -2,6 +2,10 @@
 
 # CycleGAN and pix2pix in PyTorch
 
+**NOTICE**
+
+This repo is forked from here  [👉👉](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix)
+
 We provide PyTorch implementations for both unpaired and paired image-to-image translation.
 
 The code was written by [Jun-Yan Zhu](https://github.com/junyanz) and [Taesung Park](https://github.com/taesung89), and supported by [Tongzhou Wang](https://ssnl.github.io/).
@@ -12,7 +16,7 @@ This PyTorch implementation produces results comparable to or better than our or
 
 You may find useful information in [training/test tips](docs/tips.md) and [frequently asked questions](docs/qa.md).
 
-**CycleGAN: [Project](https://junyanz.github.io/CycleGAN/) |  [Paper](https://arxiv.org/pdf/1703.10593.pdf) |  [Torch](https://github.com/junyanz/CycleGAN)**
+**CycleGAN: [Project](https://junyanz.github.io/CycleGAN/) |  [Paper](https://arxiv.org/pdf/1703.10593.pdf) |  [Torch](https://github.com/junyanz/CycleGAN)| [Blog](https://hardikbansal.github.io/CycleGANBlog/#Network-Architecture)**
 <img src="https://junyanz.github.io/CycleGAN/images/teaser_high_res.jpg" width="800"/>
 
 
@@ -51,8 +55,6 @@ CycleGAN course assignment [code](http://www.cs.toronto.edu/~rgrosse/courses/csc
 <a href="https://github.com/yunjey/mnist-svhn-transfer">[Minimal PyTorch]</a> (by yunjey),
 <a href="https://github.com/Ldpe2G/DeepLearningForFun/tree/master/Mxnet-Scala/CycleGAN">[Mxnet]</a> (by Ldpe2G),
 <a href="https://github.com/tjwei/GANotebooks">[lasagne/keras]</a> (by tjwei)</p>
-</ul>
-
 ### pix2pix
 <p><a href="https://github.com/affinelayer/pix2pix-tensorflow"> [Tensorflow]</a> (by Christopher Hesse),
 <a href="https://github.com/Eyyub/tensorflow-pix2pix">[Tensorflow]</a> (by Eyyüb Sariu),
@@ -63,8 +65,6 @@ CycleGAN course assignment [code](http://www.cs.toronto.edu/~rgrosse/courses/csc
 <a href="https://github.com/tjwei/GANotebooks">[tf/torch/keras/lasagne]</a> (by tjwei),
 <a href="https://github.com/taey16/pix2pixBEGAN.pytorch">[Pytorch]</a> (by taey16)
 </p>
-</ul>
-
 ## Prerequisites
 - Linux or macOS
 - Python 2 or 3
@@ -84,15 +84,33 @@ cd pytorch-CycleGAN-and-pix2pix
 - For Conda users, we include a script `./scripts/conda_deps.sh` to install PyTorch and other libraries.
 
 ### CycleGAN train/test
+
+- Model structure
+
+  <img src='assets/cyclegan.png' width=100%  height=100% align="center" >
+
+  - Look the pic beforehand, there exists six loss part in the whole model.
+  - Transform between style A and style B,
+
 - Download a CycleGAN dataset (e.g. maps):
+
 ```bash
 bash ./datasets/download_cyclegan_dataset.sh maps
 ```
 - Train a model:
-```bash
-#!./scripts/train_cyclegan.sh
-python train.py --dataroot ./datasets/maps --name maps_cyclegan --model cycle_gan
-```
+
+  - Firstly, run the visdom server
+
+    ```bash
+    python -m visdom.server
+    ```
+
+  - Secondly, run the train program
+
+    ```bash
+    #!./scripts/train_cyclegan.sh
+    python train.py --dataroot ./datasets/maps --name maps_cyclegan --model cycle_gan
+    ```
 - To view training results and loss plots, run `python -m visdom.server` and click the URL http://localhost:8097. To see more intermediate results, check out `./checkpoints/maps_cyclegan/web/index.html`
 - Test the model:
 ```bash
@@ -200,10 +218,10 @@ If you use this code for your research, please cite our papers.
 
 
 ## Related Projects
-**[CycleGAN-Torch](https://github.com/junyanz/CycleGAN) |
+**[CycleGAN-Torch](https://github.com/junyanz/CycleGAN) |  [CycleGan_tensorflow_1](https://github.com/vanhuyz/CycleGAN-TensorFlow)| [CycleGan_tensorflow_2](https://github.com/hardikbansal/CycleGAN) |
 [pix2pix-Torch](https://github.com/phillipi/pix2pix) | [pix2pixHD](https://github.com/NVIDIA/pix2pixHD) |
 [iGAN](https://github.com/junyanz/iGAN) |
-[BicycleGAN](https://github.com/junyanz/BicycleGAN)**
+[BicycleGAN](https://github.com/junyanz/BicycleGAN) |**
 
 ## Cat Paper Collection
 If you love cats, and love reading cool graphics, vision, and learning papers, please check out the Cat Paper [Collection](https://github.com/junyanz/CatPapers).

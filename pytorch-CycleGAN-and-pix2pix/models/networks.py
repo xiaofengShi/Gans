@@ -256,7 +256,7 @@ class UnetGenerator(nn.Module):
 
 # Defines the submodule with skip connection.
 # X -------------------identity---------------------- X
-#   |-- downsampling -- |submodule| -- upsampling --|
+#   |-- downsampling -- |submodule| -- upsampling --| #
 class UnetSkipConnectionBlock(nn.Module):
     def __init__(self, outer_nc, inner_nc, input_nc=None,
                  submodule=None, outermost=False, innermost=False, norm_layer=nn.BatchNorm2d, use_dropout=False):

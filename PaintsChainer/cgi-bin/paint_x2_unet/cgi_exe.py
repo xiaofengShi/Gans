@@ -43,6 +43,7 @@ class Painter:
             chainer.Function.type_check_enable = False
         self.cnn_128 = unet.UNET()
         self.cnn_512 = unet.UNET()
+        
         if self.gpu >= 0:
             self.cnn_128.to_gpu()
             self.cnn_512.to_gpu()
@@ -102,6 +103,7 @@ class Painter:
         sample = dataset.get_example(0, minimize=_[step], blur=blur, s_size=s_size)
 
         _ = {'S': 0, 'L': 1, 'C': 0}[step]
+        # shape is 1,4,height,width
         sample_container = np.zeros(
             (1, 4, sample[_].shape[1], sample[_].shape[2]), dtype='f')
         sample_container[0, :] = sample[_]
@@ -117,7 +119,6 @@ class Painter:
 
         if step == 'C':
             input_bat = np.zeros((1, 4, sample[1].shape[1], sample[1].shape[2]), dtype='f')
-            print(input_bat.shape)
             input_bat[0, 0, :] = sample[1]
 
             output = cuda.to_cpu(image_conv2d_layer.data[0])

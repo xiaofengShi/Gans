@@ -20,7 +20,7 @@ import pickle
 file_list = []
 
 
-def change_size(read_file):
+def CropSurroundingBlack(read_file):
     image_ori = cv2.imread(read_file)
     image = cv2.imread(read_file, 0)  # 读取图片 image_name应该是变量
     ret, thresh = cv2.threshold(image, 15, 255, cv2.THRESH_BINARY)  # 调整裁剪效果
@@ -45,8 +45,8 @@ def change_size(read_file):
                 edges_y.append(j)
 
     if edges_x:
-        left = min(edges_x)  # 左边界
-        right = max(edges_x)  # 右边界
+        left = min(edges_x)    # 左边界
+        right = max(edges_x)   # 右边界
     else:
         left = 0
         right = input_width
@@ -114,7 +114,7 @@ def main(root_dir=None, child_dirname='512px', saved_dirname='saved_path'):
     starttime = datetime.datetime.now()
     for i in range(len(file_list)):
         # print('file name is: {:s}:'.format(file_list[i]))
-        crop = change_size(file_list[i])  # 得到文件名
+        crop = CropSurroundingBlack(file_list[i])  # 得到文件名
         child_path = file_list[i].replace(img_path+'/', '')
         saved_file = os.path.join(saved_path, child_path)
         # 待保存文件主目录路径
