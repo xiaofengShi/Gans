@@ -4,7 +4,7 @@ from .base_options import BaseOptions
 class TrainOptions(BaseOptions):
     def initialize(self, parser):
         parser = BaseOptions.initialize(self, parser)
-        parser.add_argument('--display_freq', type=int, default=400, help='frequency of showing training results on screen')
+        parser.add_argument('--display_freq', type=int, default=200, help='frequency of showing training results on screen')
         parser.add_argument('--display_ncols', type=int, default=4, help='if positive, display all images in a single visdom web panel with certain number of images per row.')
         parser.add_argument('--display_id', type=int, default=1, help='window id of the web display')
         parser.add_argument('--display_server', type=str, default="http://localhost", help='visdom server of the web display')
@@ -26,6 +26,7 @@ class TrainOptions(BaseOptions):
         parser.add_argument('--no_html', action='store_true', help='do not save intermediate training results to [opt.checkpoints_dir]/[opt.name]/web/')
         parser.add_argument('--lr_policy', type=str, default='lambda', help='learning rate policy: lambda|step|plateau|cosine')
         parser.add_argument('--lr_decay_iters', type=int, default=50, help='multiply by a gamma every lr_decay_iters iterations')
+        parser.add_argument('--is_train', type=bool, default=True, help='Whether is the train model')
 
         self.isTrain = True
         return parser

@@ -4,6 +4,9 @@ from torch.nn import init
 import functools
 from torch.optim import lr_scheduler
 
+import torchvision.models as models
+densenet = models.densenet161()
+
 ###############################################################################
 # Helper Functions
 ###############################################################################
@@ -30,7 +33,8 @@ def get_scheduler(optimizer, opt):
     elif opt.lr_policy == 'step':
         scheduler = lr_scheduler.StepLR(optimizer, step_size=opt.lr_decay_iters, gamma=0.1)
     elif opt.lr_policy == 'plateau':
-        scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.2, threshold=0.01, patience=5)
+        scheduler = lr_scheduler.ReduceLROnPlateau(
+            optimizer, mode='min', factor=0.2, threshold=0.01, patience=5)
     elif opt.lr_policy == 'cosine':
         scheduler = lr_scheduler.CosineAnnealingLR(optimizer, T_max=opt.niter, eta_min=0)
     else:
@@ -41,7 +45,9 @@ def get_scheduler(optimizer, opt):
 def init_weights(net, init_type='normal', gain=0.02):
     def init_func(m):
         classname = m.__class__.__name__
-        if hasattr(m, 'weight') and (classname.find('Conv') != -1 or classname.find('Linear') != -1):
+        if hasattr(
+                m, 'weight') and(
+                classname.find('Conv') != -1 or classname.find('Linear') != -1):
             if init_type == 'normal':
                 init.normal_(m.weight.data, 0.0, gain)
             elif init_type == 'xavier':
@@ -51,7 +57,8 @@ def init_weights(net, init_type='normal', gain=0.02):
             elif init_type == 'orthogonal':
                 init.orthogonal_(m.weight.data, gain=gain)
             else:
-                raise NotImplementedError('initialization method [%s] is not implemented' % init_type)
+                raise NotImplementedError(
+                    'initialization method [%s] is not implemented' % init_type)
             if hasattr(m, 'bias') and m.bias is not None:
                 init.constant_(m.bias.data, 0.0)
         elif classname.find('BatchNorm2d') != -1:
@@ -71,32 +78,41 @@ def init_net(net, init_type='normal', init_gain=0.02, gpu_ids=[]):
     return net
 
 
-def define_G(input_nc, output_nc, ngf, netG, norm='batch', use_dropout=False, init_type='normal', init_gain=0.02, gpu_ids=[]):
+def define_G(
+        input_nc, output_nc, ngf, netG, norm='batch', use_dropout=False, init_type='normal',
+        init_gain=0.02, gpu_ids=[]):
     net = None
     norm_layer = get_norm_layer(norm_type=norm)
 
     if netG == 'resnet_9blocks':
-        net = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer, use_dropout=use_dropout, n_blocks=9)
+        net = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer,
+                              use_dropout=use_dropout, n_blocks=9)
     elif netG == 'resnet_6blocks':
-        net = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer, use_dropout=use_dropout, n_blocks=6)
+        net = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer,
+                              use_dropout=use_dropout, n_blocks=6)
     elif netG == 'unet_128':
-        net = UnetGenerator(input_nc, output_nc, 7, ngf, norm_layer=norm_layer, use_dropout=use_dropout)
+        net = UnetGenerator(input_nc, output_nc, 7, ngf,
+                            norm_layer=norm_layer, use_dropout=use_dropout)
     elif netG == 'unet_256':
-        net = UnetGenerator(input_nc, output_nc, 8, ngf, norm_layer=norm_layer, use_dropout=use_dropout)
+        net = UnetGenerator(input_nc, output_nc, 8, ngf,
+                            norm_layer=norm_layer, use_dropout=use_dropout)
     else:
         raise NotImplementedError('Generator model name [%s] is not recognized' % netG)
     return init_net(net, init_type, init_gain, gpu_ids)
 
 
-def define_D(input_nc, ndf, netD,
-             n_layers_D=3, norm='batch', use_sigmoid=False, init_type='normal', init_gain=0.02, gpu_ids=[]):
+def define_D(
+        input_nc, ndf, netD, n_layers_D=3, norm='batch', use_sigmoid=False, init_type='normal',
+        init_gain=0.02, gpu_ids=[]):
     net = None
     norm_layer = get_norm_layer(norm_type=norm)
 
     if netD == 'basic':
-        net = NLayerDiscriminator(input_nc, ndf, n_layers=3, norm_layer=norm_layer, use_sigmoid=use_sigmoid)
+        net = NLayerDiscriminator(input_nc, ndf, n_layers=3,
+                                  norm_layer=norm_layer, use_sigmoid=use_sigmoid)
     elif netD == 'n_layers':
-        net = NLayerDiscriminator(input_nc, ndf, n_layers_D, norm_layer=norm_layer, use_sigmoid=use_sigmoid)
+        net = NLayerDiscriminator(input_nc, ndf, n_layers_D,
+                                  norm_layer=norm_layer, use_sigmoid=use_sigmoid)
     elif netD == 'pixel':
         net = PixelDiscriminator(input_nc, ndf, norm_layer=norm_layer, use_sigmoid=use_sigmoid)
     else:
@@ -140,12 +156,20 @@ class GANLoss(nn.Module):
 # Code and idea originally from Justin Johnson's architecture.
 # https://github.com/jcjohnson/fast-neural-style/
 class ResnetGenerator(nn.Module):
-    def __init__(self, input_nc, output_nc, ngf=64, norm_layer=nn.BatchNorm2d, use_dropout=False, n_blocks=6, padding_type='reflect'):
+
+    """
+    For style transfer, use:instance_normalization
+    """
+
+    def __init__(
+            self, input_nc, output_nc, ngf=64, norm_layer=nn.BatchNorm2d, use_dropout=False,
+            n_blocks=6, padding_type='reflect'):
         assert(n_blocks >= 0)
         super(ResnetGenerator, self).__init__()
         self.input_nc = input_nc
         self.output_nc = output_nc
         self.ngf = ngf
+
         if type(norm_layer) == functools.partial:
             use_bias = norm_layer.func == nn.InstanceNorm2d
         else:
@@ -159,16 +183,26 @@ class ResnetGenerator(nn.Module):
 
         n_downsampling = 2
         for i in range(n_downsampling):
+            """
+            @mult in [1,2]
+            @input dim is [64,126]
+            @out dim is [126,252]
+            """
             mult = 2**i
             model += [nn.Conv2d(ngf * mult, ngf * mult * 2, kernel_size=3,
                                 stride=2, padding=1, bias=use_bias),
                       norm_layer(ngf * mult * 2),
                       nn.ReLU(True)]
 
-        mult = 2**n_downsampling
+        mult = 2 ** n_downsampling
+        """
+        mult=4
+        resbolock dim is 256
+        """
         for i in range(n_blocks):
-            model += [ResnetBlock(ngf * mult, padding_type=padding_type, norm_layer=norm_layer, use_dropout=use_dropout, use_bias=use_bias)]
-
+            model += [ResnetBlock(ngf * mult, padding_type=padding_type,
+                                  norm_layer=norm_layer, use_dropout=use_dropout, use_bias=use_bias)]
+        """ upsanmple """
         for i in range(n_downsampling):
             mult = 2**(n_downsampling - i)
             model += [nn.ConvTranspose2d(ngf * mult, int(ngf * mult / 2),
@@ -191,7 +225,8 @@ class ResnetGenerator(nn.Module):
 class ResnetBlock(nn.Module):
     def __init__(self, dim, padding_type, norm_layer, use_dropout, use_bias):
         super(ResnetBlock, self).__init__()
-        self.conv_block = self.build_conv_block(dim, padding_type, norm_layer, use_dropout, use_bias)
+        self.conv_block = self.build_conv_block(
+            dim, padding_type, norm_layer, use_dropout, use_bias)
 
     def build_conv_block(self, dim, padding_type, norm_layer, use_dropout, use_bias):
         conv_block = []
@@ -220,6 +255,7 @@ class ResnetBlock(nn.Module):
             p = 1
         else:
             raise NotImplementedError('padding [%s] is not implemented' % padding_type)
+
         conv_block += [nn.Conv2d(dim, dim, kernel_size=3, padding=p, bias=use_bias),
                        norm_layer(dim)]
 
@@ -240,13 +276,21 @@ class UnetGenerator(nn.Module):
         super(UnetGenerator, self).__init__()
 
         # construct unet structure
-        unet_block = UnetSkipConnectionBlock(ngf * 8, ngf * 8, input_nc=None, submodule=None, norm_layer=norm_layer, innermost=True)
+        unet_block = UnetSkipConnectionBlock(
+            ngf * 8, ngf * 8, input_nc=None, submodule=None, norm_layer=norm_layer, innermost=True)
         for i in range(num_downs - 5):
-            unet_block = UnetSkipConnectionBlock(ngf * 8, ngf * 8, input_nc=None, submodule=unet_block, norm_layer=norm_layer, use_dropout=use_dropout)
-        unet_block = UnetSkipConnectionBlock(ngf * 4, ngf * 8, input_nc=None, submodule=unet_block, norm_layer=norm_layer)
-        unet_block = UnetSkipConnectionBlock(ngf * 2, ngf * 4, input_nc=None, submodule=unet_block, norm_layer=norm_layer)
-        unet_block = UnetSkipConnectionBlock(ngf, ngf * 2, input_nc=None, submodule=unet_block, norm_layer=norm_layer)
-        unet_block = UnetSkipConnectionBlock(output_nc, ngf, input_nc=input_nc, submodule=unet_block, outermost=True, norm_layer=norm_layer)
+            unet_block = UnetSkipConnectionBlock(
+                ngf * 8, ngf * 8, input_nc=None, submodule=unet_block, norm_layer=norm_layer,
+                use_dropout=use_dropout)
+        unet_block = UnetSkipConnectionBlock(
+            ngf * 4, ngf * 8, input_nc=None, submodule=unet_block, norm_layer=norm_layer)
+        unet_block = UnetSkipConnectionBlock(
+            ngf * 2, ngf * 4, input_nc=None, submodule=unet_block, norm_layer=norm_layer)
+        unet_block = UnetSkipConnectionBlock(
+            ngf, ngf * 2, input_nc=None, submodule=unet_block, norm_layer=norm_layer)
+        unet_block = UnetSkipConnectionBlock(
+            output_nc, ngf, input_nc=input_nc, submodule=unet_block, outermost=True,
+            norm_layer=norm_layer)
 
         self.model = unet_block
 
@@ -258,8 +302,8 @@ class UnetGenerator(nn.Module):
 # X -------------------identity---------------------- X
 #   |-- downsampling -- |submodule| -- upsampling --| #
 class UnetSkipConnectionBlock(nn.Module):
-    def __init__(self, outer_nc, inner_nc, input_nc=None,
-                 submodule=None, outermost=False, innermost=False, norm_layer=nn.BatchNorm2d, use_dropout=False):
+    def __init__(self, outer_nc, inner_nc, input_nc=None, submodule=None, outermost=False,
+                 innermost=False, norm_layer=nn.BatchNorm2d, use_dropout=False):
         super(UnetSkipConnectionBlock, self).__init__()
         self.outermost = outermost
         if type(norm_layer) == functools.partial:
@@ -268,6 +312,7 @@ class UnetSkipConnectionBlock(nn.Module):
             use_bias = norm_layer == nn.InstanceNorm2d
         if input_nc is None:
             input_nc = outer_nc
+
         downconv = nn.Conv2d(input_nc, inner_nc, kernel_size=4,
                              stride=2, padding=1, bias=use_bias)
         downrelu = nn.LeakyReLU(0.2, True)
@@ -307,6 +352,7 @@ class UnetSkipConnectionBlock(nn.Module):
         if self.outermost:
             return self.model(x)
         else:
+            out = torch.cat([x, self.model(x)], 1)
             return torch.cat([x, self.model(x)], 1)
 
 

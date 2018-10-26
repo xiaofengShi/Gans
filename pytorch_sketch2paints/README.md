@@ -74,7 +74,7 @@ CycleGAN course assignment [code](http://www.cs.toronto.edu/~rgrosse/courses/csc
 ### Installation
 - Install PyTorch 0.4+ and torchvision from http://pytorch.org and other dependencies (e.g., [visdom](https://github.com/facebookresearch/visdom) and [dominate](https://github.com/Knio/dominate)). You can install all the dependencies by
 ```bash
-pip install -r requirements.txt
+pip install -r requirements.txt  -i  https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 - Clone this repo:
 ```bash
@@ -102,14 +102,14 @@ bash ./datasets/download_cyclegan_dataset.sh maps
   - Firstly, run the visdom server
 
     ```bash
-    python -m visdom.server
+    python3 -m visdom.server
     ```
 
   - Secondly, run the train program
 
     ```bash
     #!./scripts/train_cyclegan.sh
-    python train.py --dataroot ./datasets/maps --name maps_cyclegan --model cycle_gan
+    python3 train.py --dataroot ./datasets/maps --name maps_cyclegan --model cycle_gan --gpu_ids -1
     ```
 - To view training results and loss plots, run `python -m visdom.server` and click the URL http://localhost:8097. To see more intermediate results, check out `./checkpoints/maps_cyclegan/web/index.html`
 - Test the model:

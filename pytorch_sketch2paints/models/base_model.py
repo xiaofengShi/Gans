@@ -2,6 +2,11 @@ import os
 import torch
 from collections import OrderedDict
 from . import networks
+import re
+import hickle as hkl
+import torch.nn.functional as F
+from torch.autograd import Variable
+from torchviz import make_dot
 
 
 class BaseModel():
@@ -19,7 +24,8 @@ class BaseModel():
         self.opt = opt
         self.gpu_ids = opt.gpu_ids
         self.isTrain = opt.isTrain
-        self.device = torch.device('cuda:{}'.format(self.gpu_ids[0])) if self.gpu_ids else torch.device('cpu')
+        self.device = torch.device('cuda:{}'.format(
+            self.gpu_ids[0])) if self.gpu_ids else torch.device('cpu')
         self.save_dir = os.path.join(opt.checkpoints_dir, opt.name)
         if opt.resize_or_crop != 'scale_width':
             torch.backends.cudnn.benchmark = True
@@ -37,8 +43,9 @@ class BaseModel():
     # load and print networks; create schedulers
     def setup(self, opt, parser=None):
         if self.isTrain:
-            self.schedulers = [networks.get_scheduler(optimizer, opt) for optimizer in self.optimizers]
-
+            self.schedulers = [networks.get_scheduler(optimizer, opt)
+                               for optimizer in self.optimizers]
+        print('load network')
         if not self.isTrain or opt.continue_train:
             self.load_networks(opt.epoch)
         self.print_networks(opt.verbose)
@@ -131,7 +138,8 @@ class BaseModel():
                     del state_dict._metadata
 
                 # patch InstanceNorm checkpoints prior to 0.4
-                for key in list(state_dict.keys()):  # need to copy keys here because we mutate in loop
+                for key in list(
+                        state_dict.keys()):  # need to copy keys here because we mutate in loop
                     self.__patch_instance_norm_state_dict(state_dict, net, key.split('.'))
                 net.load_state_dict(state_dict)
 
@@ -146,10 +154,17 @@ class BaseModel():
                     num_params += param.numel()
                 if verbose:
                     print(net)
+                """ display params """
+                # params = net.state_dict()
+                # f = self.define_model(params)
+                # inputs = torch.randn(1, 3, 224, 224)
+                # y = f(Variable(inputs), params)
+                # make_dot(y, params)
                 print('[Network %s] Total number of parameters : %.3f M' % (name, num_params / 1e6))
         print('-----------------------------------------------')
 
     # set requies_grad=Fasle to avoid computation
+
     def set_requires_grad(self, nets, requires_grad=False):
         if not isinstance(nets, list):
             nets = [nets]
@@ -157,3 +172,42 @@ class BaseModel():
             if net is not None:
                 for param in net.parameters():
                     param.requires_grad = requires_grad
+
+    # plot model
+    def define_model(self, params):
+        def conv2d(input, params, base, stride=1, pad=0):
+            return F.conv2d(input, params[base + '.weight'],
+                            params[base + '.bias'], stride, pad)
+
+        def group(input, params, base, stride, n):
+            o = input
+            for i in range(0, n):
+                b_base = ('%s.block%d.conv') % (base, i)
+                x = o
+                o = conv2d(x, params, b_base + '0', pad=1, stride=i == 0 and stride or 1)
+                o = F.relu(o)
+                o = conv2d(o, params, b_base + '1', pad=1)
+                if i == 0 and stride != 1:
+                    o += F.conv2d(x, params[b_base + '_dim.weight'], stride=stride)
+                else:
+                    o += x
+                o = F.relu(o)
+            return o
+
+        # determine network size by parameters
+        blocks = [sum([re.match('group%d.block\d+.conv0.weight' % j, k) is not None
+                       for k in params.keys()]) for j in range(4)]
+
+        def f(input, params):
+            o = F.conv2d(input, params['conv0.weight'], params['conv0.bias'], 2, 3)
+            o = F.relu(o)
+            o = F.max_pool2d(o, 3, 2, 1)
+            o_g0 = group(o, params, 'group0', 1, blocks[0])
+            o_g1 = group(o_g0, params, 'group1', 2, blocks[1])
+            o_g2 = group(o_g1, params, 'group2', 2, blocks[2])
+            o_g3 = group(o_g2, params, 'group3', 2, blocks[3])
+            o = F.avg_pool2d(o_g3, 7, 1, 0)
+            o = o.view(o.size(0), -1)
+            o = F.linear(o, params['fc.weight'], params['fc.bias'])
+            return o
+        return f

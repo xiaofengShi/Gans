@@ -277,16 +277,12 @@ class Image2ImageDataset(chainer.dataset.DatasetMixin):
                     image1[x[i]][y[i]][ch + 1] = v
                 if np.random.rand() > 0.5:
                     for ch in range(3):
-                        image1[x[i]][y[i] + 1][ch +
-                                               1] = image1[x[i]][y[i]][ch + 1]
-                        image1[x[i]][y[i] - 1][ch +
-                                               1] = image1[x[i]][y[i]][ch + 1]
+                        image1[x[i]][y[i] + 1][ch +1] = image1[x[i]][y[i]][ch + 1]
+                        image1[x[i]][y[i] - 1][ch +1] = image1[x[i]][y[i]][ch + 1]
                 if np.random.rand() > 0.5:
                     for ch in range(3):
-                        image1[x[i] + 1][y[i]][ch +
-                                               1] = image1[x[i]][y[i]][ch + 1]
-                        image1[x[i] - 1][y[i]][ch +
-                                               1] = image1[x[i]][y[i]][ch + 1]
+                        image1[x[i] + 1][y[i]][ch +1] = image1[x[i]][y[i]][ch + 1]
+                        image1[x[i] - 1][y[i]][ch +1] = image1[x[i]][y[i]][ch + 1]
 
         image1 = (image1.transpose(2, 0, 1))
         image2 = (image2.transpose(2, 0, 1))

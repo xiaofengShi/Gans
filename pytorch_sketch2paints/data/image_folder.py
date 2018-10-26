@@ -10,11 +10,22 @@ import torch.utils.data as data
 from PIL import Image
 import os
 import os.path
+import cv2
+
+
+def cvt2YUV(img):
+    (major, minor, _) = cv2.__version__.split(".")
+    if major == '3':
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2YUV)
+    else:
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2YUV)
+    return img
 
 IMG_EXTENSIONS = [
     '.jpg', '.JPG', '.jpeg', '.JPEG',
     '.png', '.PNG', '.ppm', '.PPM', '.bmp', '.BMP',
 ]
+
 
 
 def is_image_file(filename):
@@ -32,6 +43,25 @@ def make_dataset(dir):
                 images.append(path)
 
     return images
+
+
+file_list = []
+
+
+def SearchFiles(root_dir, suffix):
+    global file_list
+    assert os.path.exists(root_dir)
+    try:
+        dir_list = os.listdir(root_dir)
+        for files in dir_list:
+            child_dir = os.path.join(root_dir, files)
+            if os.path.isdir(child_dir):
+                SearchFiles(child_dir, suffix)
+            elif os.path.isfile(child_dir) and os.path.splitext(child_dir)[1] in suffix:
+                file_list.append(child_dir)
+    except Exception as e:
+        print('ERROR：', e)
+    return file_list
 
 
 def default_loader(path):
