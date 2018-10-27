@@ -40,7 +40,8 @@ class Sketch2paintsModel(BaseModel):
         BaseModel.initialize(self, opt)
 
         # specify the training losses you want to print out. The program will call base_model.get_current_losses
-        self.loss_names = ['D_A', 'G_A', 'cycle_A', 'idt_A', 'D_B', 'G_B', 'cycle_B', 'idt_B']
+        self.loss_names = ['D_A', 'G_A', 'cycle_A', 'idt_A', 'D_B', 'G_B',
+                           'cycle_B', 'idt_B', 'G_A_FALSE', 'G_B_FALSE', 'cycle_A_A', 'cycle_B_B']
         # specify the images you want to save/display. The program will call base_model.get_current_visuals
         visual_names_A = ['real_A', 'fake_B', 'rec_A']
         visual_names_B = ['real_B', 'fake_A', 'rec_B']
@@ -172,24 +173,26 @@ class Sketch2paintsModel(BaseModel):
             self.loss_idt_A = 0
             self.loss_idt_B = 0
 
-        # GAN loss D_A(G_A(A))
+        # GAN loss D_A(G_A(A)) TRUE
         self.loss_G_A = self.criterionGAN(self.netD_A(self.fake_B), True)
-        print('1')
+        # Gan loss D_A(G_A(A)) FALSE
+        self.loss_G_A_FALSE = self.criterionGAN(self.netD_A(self.fake_B), False)
+        # Gan loss D_A(B) FALSE
+        self.loss_G_B_FALSE = self.criterionGAN(self.netD_A(self.real_B), False)
         # GAN loss D_B(G_B(B))
         self.loss_G_B = self.criterionGAN(self.netD_B(self.fake_A), True)
-        print('2')
         # Forward cycle loss
-        self.loss_cycle_A = self.criterionCycle(self.rec_A, self.real_A) * lambda_A   # cyclegan
-        # self.loss_cycle_A = self.criterionCycle(self.rec_A, self.fake_A) * lambda_A
-        print('3')
+        self.loss_cycle_A = self.criterionCycle(self.rec_A, self.real_A) * lambda_A
+        # Backward cycle loss for recA and fakeA
+        self.loss_cycle_A_A = self.criterionCycle(self.rec_A, self.fake_A) * lambda_A*0.1
         # Backward cycle loss
-        self.loss_cycle_B = self.criterionCycle(self.rec_B, self.real_B) * lambda_B    # cyclegan
-        # self.loss_cycle_B = self.criterionCycle(self.fake_B, self.real_B) * lambda_B
-        print('4')
+        self.loss_cycle_B = self.criterionCycle(self.rec_B, self.real_B) * lambda_B
+        # Backward cycle loss for recB and fakeB
+        self.loss_cycle_B_B = self.criterionCycle(self.rec_B, self.fake_B) * lambda_B*0.1
+
         # combined loss
-        self.loss_G = self.loss_G_A + self.loss_G_B + self.loss_cycle_A + self.loss_cycle_B + self.loss_idt_A + self.loss_idt_B  # cyclegan
-        # self.loss_G = self.loss_G_A + self.loss_G_B 
-        print('5')
+        self.loss_G = self.loss_G_A + self.loss_G_B + self.loss_cycle_A + self.loss_cycle_B + self.loss_idt_A + \
+            self.loss_idt_B + (self.loss_cycle_A_A + self.loss_cycle_B_B+self.loss_G_A_FALSE+self.loss_G_B_FALSE)*0
         self.loss_G.backward()
 
     def optimize_parameters(self):
