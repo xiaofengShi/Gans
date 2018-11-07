@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block upload %}
+
+<div class="container">
+    <div class="alert alert-warning alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+        <strong>Congratulation!!</strong> You are experiencing a novel feature.
+    </div>
+    <span class="label label label-info">Auto Sketch Colorization</span>
+    <div class="well" style="background-color: aliceblue">
+        <div class="row">
+            <div class="col-md-6 " style="margin-bottom: 5px;">
+                <!-- <input id="blur_k" type="hidden" /> -->
+                <form method=post enctype=multipart/form-data> <i class="glyphicon glyphicon-upload "></i>
+                    Set sketch:
+                    <input type="file" size="100" name="upload_img" style="display:inline ">
+                    <button type="submit" name="submit_img" value="submit_img" class="btn btn-default btn-sm"
+                        size="100" style="display:inline">
+                        <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+                        Upload</button>
+                </form>
+            </div>
+
+            <div class="col-md-6 " style="margin-bottom: 5px;">
+                <input id="blur_k" type="hidden" />
+                <form method=post enctype=multipart/form-data> <button name="color_submit"
+                    onclick="" value="color_submit" class="btn btn-large btn-primary">
+                    <i class="icon-edit icon-white"></i> Colorize</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="margin-top:42px;">
+        <div class="col-xs-11 col-sm-6">
+            <div id="img_pane" style="display:none">
+                <div id="wPaint" style="position: relative; background-color:rgba(0,0,255,0); border:solid 1px">
+                    <img id="background" style="max-width:100%" src="">
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-1 visible-xs-block"></div>
+        <div class="col-xs-11 col-sm-6">
+            <img id="output" style="display:none; max-width:100%; border:solid 1px black">
+        </div>
+        <div class="col-xs-1 visible-xs-block"></div>
+    </div>
+
+    <!-- <div class="row">
+        <div class="col-md-6">
+
+            <span class="label label-success">How To Use</span>
+            <div class="well well-small">
+                <ol>
+                    <li>Select line drawing image
+                    <li>Add hint information using color pen in left image</li>
+                    <li>Click the 'colorize' button</li>
+                </ol>
+                <span style="color:gray">(gif &amp; alpha channel png is not
+                    supported)</li></span>
+            </div>
+
+        </div>
+    </div> -->
+
+    <p>
+        {% if img %}
+
+        <img src="{{img}}" align="center" alt="">
+
+        {% endif %}
+
+    </p>
+</div>
+
+
+
+
+
+
+{% endblock %}

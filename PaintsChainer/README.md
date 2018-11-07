@@ -10,7 +10,12 @@ http://paintschainer.preferred.tech/
 
 ### 1.Model strueture
 
-<img src='assets/paints.png' width=90%  height=90% align=center >
+<hr>
+
+<img src='assets/sketch2paints.jpg' width="90%"  height="90%" align="center" >
+
+- 输入图片为input_A，对应线稿风格图片。
+- 目标图片为t_out，对应上色之后的图片
 
 ## Requirement
 

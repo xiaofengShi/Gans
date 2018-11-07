@@ -10,9 +10,8 @@ import argparse
 
 from cgi import parse_header, parse_multipart
 from urllib.parse import parse_qs
-
-
-# sys.path.append('./cgi-bin/wnet')
+sys.path.append('./sketchKeras')
+import run
 sys.path.append('./cgi-bin/paint_x2_unet')
 import cgi_exe
 sys.path.append('./cgi-bin/helpers')
@@ -86,13 +85,33 @@ class MyHandler(http.server.CGIHTTPRequestHandler):
         blur = 0
         if "blur" in form:
             blur = form["blur"][0].decode()
+
             try:
                 blur = int(blur)
             except ValueError:
                 blur = 0
-
         self.log_t()
         painter.colorize(id_str, form["step"][0].decode() if "step" in form else "C", blur=blur)
+
+        self.log_t()
+        self.ret_result(True)
+        self.log_t()
+        self.print_log()
+
+        return
+
+    def sketch_process(self, form, id_str):
+
+        blur = 0
+        if "blur" in form:
+            blur = form["blur"][0].decode()
+
+            try:
+                blur = int(blur)
+            except ValueError:
+                blur = 0
+        self.log_t()
+        sketcher.tosketch(id_str)
 
         self.log_t()
         self.ret_result(True)
@@ -135,6 +154,8 @@ class MyHandler(http.server.CGIHTTPRequestHandler):
             self.post_process(form, id_str)
         elif (re.search('/paint/*', self.path) != None):
             self.paint_process(form, id_str)
+        elif (re.search('/sketch/*', self.path) != None):
+            self.sketch_process(form, id_str)
         else:
             self.ret_result(False)
         return
@@ -143,7 +164,7 @@ class MyHandler(http.server.CGIHTTPRequestHandler):
 # set args
 if "__main__" in __name__:
     parser = argparse.ArgumentParser(description='chainer line drawing colorization server')
-    parser.add_argument('--gpu', '-g', type=int, default=0,
+    parser.add_argument('--gpu', '-g', type=int, default=-1,
                         help='GPU ID (negative value indicates CPU)')
     parser.add_argument('--mode', '-m', default="stand_alone",
                         help='set process mode')
@@ -160,7 +181,7 @@ if "__main__" in __name__:
     if args.mode == "stand_alone" or args.mode == "paint_server":
         print('GPU: {}'.format(args.gpu))
         painter = cgi_exe.Painter(gpu=args.gpu)
-
+        sketcher = run.Sketch(gpu=args.gpu)
     httpd = http.server.HTTPServer((args.host, args.port), MyHandler)
-    print('serving at', args.host, ':', args.port, )
+    print('serving at {:s}:{:d}'.format(args.host, args.port))
     httpd.serve_forever()

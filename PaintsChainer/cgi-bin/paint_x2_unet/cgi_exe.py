@@ -1,4 +1,14 @@
-#!/usr/bin/env python
+'''
+File: cgi_exe.py
+Project: paint_x2_unet
+File Created: Friday, 12th October 2018 6:27:43 pm
+Author: xiaofeng (sxf1052566766@163.com)
+--------------------------
+Last Modified: Friday, 2nd November 2018 12:18:33 pm
+Modified By: xiaofeng (sxf1052566766@163.com>)
+---------------------------
+Copyright: 2018.06 - 2018 OnionMath, OnionMath
+'''
 
 
 import numpy as np
@@ -6,13 +16,7 @@ import chainer
 from chainer import cuda, serializers, Variable  # , optimizers, training
 import cv2
 import os.path
-#import chainer.functions as F
-#import chainer.links as L
-#import six
-#import os
 
-#from chainer.training import extensions
-#from train import Image2ImageDataset
 from img2imgDataset import ImageAndRefDataset
 
 import unet
@@ -43,12 +47,13 @@ class Painter:
             chainer.Function.type_check_enable = False
         self.cnn_128 = unet.UNET()
         self.cnn_512 = unet.UNET()
-        
+        self.lnn = lnet.LNET()
         if self.gpu >= 0:
             self.cnn_128.to_gpu()
             self.cnn_512.to_gpu()
-        #lnn = lnet.LNET()
-        #serializers.load_npz("./cgi-bin/wnet/models/model_cnn_128_df_4", cnn_128)
+            self.lnn.to_gpu()
+
+        serializers.load_npz("./models/liner_f", self.lnn)
         #serializers.load_npz("./cgi-bin/paint_x2_unet/models/model_cnn_128_f3_2", cnn_128)
         serializers.load_npz(
             "./models/unet_128_standard", self.cnn_128)
@@ -74,13 +79,15 @@ class Painter:
     def liner(self, id_str):
         if self.gpu >= 0:
             cuda.get_device(self.gpu).use()
-
+        path1 = os.path.join(self.root, 'line', id_str+'.png')
         image1 = cv2.imread(path1, cv2.IMREAD_GRAYSCALE)
         image1 = np.asarray(image1, self._dtype)
         if image1.ndim == 2:
             image1 = image1[:, :, np.newaxis]
+
         img = image1.transpose(2, 0, 1)
         x = np.zeros((1, 3, img.shape[1], img.shape[2]), dtype='f')
+        x[0, :] = img
         if self.gpu >= 0:
             x = cuda.to_gpu(x)
 
@@ -91,7 +98,7 @@ class Painter:
 
         self.save_as_img(y.data[0], self.root + "line/" + id_str + ".jpg")
 
-    def colorize(self, id_str, step='C', blur=0, s_size=128,colorize_format="jpg"):
+    def colorize(self, id_str, step='C', blur=0, s_size=128, colorize_format="jpg"):
         if self.gpu >= 0:
             cuda.get_device(self.gpu).use()
 
@@ -117,6 +124,8 @@ class Painter:
                 image_conv2d_layer = cnn[step].calc(Variable(sample_container))
         del sample_container
 
+        """ convert 128 to 512 """
+
         if step == 'C':
             input_bat = np.zeros((1, 4, sample[1].shape[1], sample[1].shape[2]), dtype='f')
             input_bat[0, 0, :] = sample[1]
@@ -126,8 +135,8 @@ class Painter:
 
             for channel in range(3):
                 input_bat[0, 1 + channel, :] = cv2.resize(
-                    output[channel, :], 
-                    (sample[1].shape[2], sample[1].shape[1]), 
+                    output[channel, :],
+                    (sample[1].shape[2], sample[1].shape[1]),
                     interpolation=cv2.INTER_CUBIC)
 
             if self.gpu >= 0:
@@ -140,12 +149,68 @@ class Painter:
             del link  # release memory
 
         image_out_path = {
-            'S': self.outdir_min + id_str + ".png", 
-            'L': self.outdir + id_str + ".jpg", 
+            'S': self.outdir_min + id_str + ".png",
+            'L': self.outdir + id_str + ".jpg",
             'C': self.outdir + id_str + "_0." + colorize_format}
         self.save_as_img(image_conv2d_layer.data[0], image_out_path[step])
         del image_conv2d_layer
 
+    def colorize_flask(self, id_str, step='C', blur=0, s_size=128, colorize_format="jpg"):
+        if self.gpu >= 0:
+            cuda.get_device(self.gpu).use()
+
+        _ = {'S': "ref/", 'L': "out_min/", 'C': "ref/"}
+        dataset = ImageAndRefDataset(
+            [id_str + ".png"], self.root + "line/", self.root + _[step])
+
+        _ = {'S': True, 'L': False, 'C': True}
+        sample = dataset.get_example(0, minimize=_[step], blur=blur, s_size=s_size)
+
+        _ = {'S': 0, 'L': 1, 'C': 0}[step]
+        # shape is 1,4,height,width
+        sample_container = np.zeros(
+            (1, 4, sample[_].shape[1], sample[_].shape[2]), dtype='f')
+        sample_container[0, :] = sample[_]
+
+        if self.gpu >= 0:
+            sample_container = cuda.to_gpu(sample_container)
+
+        cnn = {'S': self.cnn_128, 'L': self.cnn_512, 'C': self.cnn_128}
+        with chainer.no_backprop_mode():
+            with chainer.using_config('train', False):
+                image_conv2d_layer = cnn[step].calc(Variable(sample_container))
+        del sample_container
+
+        """ convert 128 to 512 """
+
+        if step == 'C':
+            input_bat = np.zeros((1, 4, sample[1].shape[1], sample[1].shape[2]), dtype='f')
+            input_bat[0, 0, :] = sample[1]
+
+            output = cuda.to_cpu(image_conv2d_layer.data[0])
+            del image_conv2d_layer  # release memory
+
+            for channel in range(3):
+                input_bat[0, 1 + channel, :] = cv2.resize(
+                    output[channel, :],
+                    (sample[1].shape[2], sample[1].shape[1]),
+                    interpolation=cv2.INTER_CUBIC)
+
+            if self.gpu >= 0:
+                link = cuda.to_gpu(input_bat, None)
+            else:
+                link = input_bat
+            with chainer.no_backprop_mode():
+                with chainer.using_config('train', False):
+                    image_conv2d_layer = self.cnn_512.calc(Variable(link))
+            del link  # release memory
+
+        image_out_path = {
+            'S': self.outdir_min + id_str + ".png",
+            'L': self.outdir + id_str + ".jpg",
+            'C': self.outdir + id_str + "_0." + colorize_format}
+        self.save_as_img(image_conv2d_layer.data[0], image_out_path[step])
+        del image_conv2d_layer
 
 
 if __name__ == '__main__':

@@ -1,0 +1,365 @@
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="shortcut icon" href="/images/favicon.ico">
+    <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#c90000">
+    <meta name="apple-mobile-web-app-title" content="PaintsChainer">
+    <meta name="application-name" content="PaintsChainer">
+    <link rel="apple-touch-icon" sizes="57x57" href="/images/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/images/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/images/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/images/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/images/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/images/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/images/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/images/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/images/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/images/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="alternate" hreflang="ja" href="/index_ja.html">
+    <link rel="alternate" hreflang="zh" href="/index_zh.html">
+    <link rel="alternate" hreflang="en" href="/index_en.html">
+    <title>PaintsChainer</title>
+    <!-- Canvas toBlob polyfill -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.8.0/js/canvas-to-blob.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <!-- jQuery Cookie -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <!-- jQuery UI -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!-- font-awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+    <!-- Mobile detect -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/mobile-detect/1.3.6/mobile-detect.min.js"></script>
+    <!-- main -->
+    <link rel="stylesheet" href="static/css/paints_chainer.css">
+    <script src="https://cdn.ravenjs.com/3.19.1/raven.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        window.i18n_locales = { "warn_too_large_filesize": "Image too large to colorize", "tanpopo": "Tanpopo", "satsuki": "Satsuki", "canna": "Canna", "panda": "Panda", "shirokuma": "Shirokuma", "paint": "Colorize", "share": "Share", "download": "Download", "upload_other": "Upload other image", "edit_color": "Color", "edit_line": "Line", "line_simplify": "Line Simplify", "auto_paint": "Auto Refresh", "preset_image_title": "", "preset_image_title_2": "", "preset_image_1": "Illustration by Ogata-san", "preset_image_2": "Illustration by Momo-san", "preset_image_3": "Illustration by Momo-san", "preset_image_4": "Illustration by Momo-san", "preset_image_5": "Illustration by Derori-san", "preset_image_6": "Illustration by Imomushi-san" }
+    </script>
+    <script src="static/js/paints_chainer.js"></script>
+
+    <link rel="stylesheet" href="static/css/index.css">
+</head>
+
+<body id="colorize-page">
+    <nav id="top-nav" class="navbar navbar-default">
+        <div class="nav-container container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span><span class="icon-bar"></span><span
+                        class="icon-bar"></span>
+                </button>
+                <div class="logo">
+                    <a href="index_en.html">
+                        <img src="static/images/logo.svg" width="138" height="32" />
+                    </a>
+                </div>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <span class="handle upload-button">
+                            <img src="static/images/upload.svg" />
+                            Upload
+                        </span>
+                    </li>
+                    <li>
+                        <span class="handle preset-button">
+                            <img src="static/images/brush.svg" />
+                            Colorize a sample image
+                        </span>
+                    </li>
+                    <li>
+                        <a class="handle" href="/webui/howto/">
+                            <img src="static/images/info-q.svg" />
+                            How to
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+    <div id="main-container">
+        <div id="app" class="app-init"></div>
+
+        <div id="tagline">
+            <div class="photo-description">
+                <a href="https://paintschainer-pr.preferred.tech/chiena-news/" target="_blank">
+                    <ruby>絵<rt>えー</rt>愛<rt>あい</rt></ruby> ちえな
+                </a>
+            </div>
+            <div id="cover-image">
+                <div id="back-photo"></div>
+            </div>
+            <div id="cover-ui">
+                <div class="main-tagline">AI-Powered
+                    Automatic Colorization
+                </div>
+                <div class="hover-button upload-button">
+                    <img src="static/images/upload_white.svg" width="22" height="20" />
+                    Upload sketch image
+                </div>
+                <div class="hover-button preset-button">
+                    <img src="static/images/pencil_box_white.svg" />
+                    Colorize a sample image
+                </div>
+            </div>
+        </div>
+
+        <div id="pr-section">
+            <div class="headline">
+                <div class="point">
+                    <a href="/webui/howto/">
+                        <div id="pr-section-point1">
+                            <img src="static/images/index/pr_line_before.jpg" />
+                        </div>
+                        <div class="caption">
+                            <h2>You can simplify and refine the strokes of your rough
+                                sketch.</h2>
+                        </div>
+                    </a>
+                </div>
+                <div class="point">
+                    <a href="/webui/howto/">
+                        <div id="pr-section-point2">
+                            <img src="static/images/index/pr_hint_before.jpg" />
+                        </div>
+                        <div class="caption">
+                            <h2>You can add color hints to influence the colorization.</h2>
+                        </div>
+                    </a>
+                </div>
+                <div class="point">
+                    <a href="/webui/howto/">
+                        <div id="pr-section-point3">
+                            <img src="static/images/index/index_pr_spot3.jpg" />
+                        </div>
+                        <div class="caption">
+                            <h2>Colorization styles "Tanpopo", "Satsuki" and "Canna" are
+                                available.</h2>
+                        </div>
+                    </a>
+                </div>
+                <div class="point">
+                    <a href="https://sketch.pixiv.net" target="_blank">
+                        <div id="pr-section-point4">
+                            <img src="static/images/index/index_pr_spot4.png" />
+                        </div>
+                        <div class="caption">
+                            <h2>You can also experience PaintsChainer within pixiv Sketch</h2>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="more">
+                <div class="wire-button howto-button">
+                    <a href="/webui/howto/">
+                        <img src="static/images/info-q.svg" width="22" height="22" />
+                        Learn more
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="info-section">
+            <div class="info-container">
+                <div id="news">
+                    <h2>News</h2>
+                    <div class="box">
+                        <p>
+                            Our thoughts and prayers are with the people affected by the
+                            earthquake that struck Hokkaido in northern Japan earlier
+                            this month.<br />
+                            Today, we are pleased to announce the resumption of Canna and
+                            Line Simplify services, which we had suspended as part of our
+                            energy-saving efforts for the region, after a generator at
+                            the Tomato-Atsuma power plant in the prefecture was restarted
+                            this afternoon.<br />
+                            We are very grateful for your understanding and cooperation.
+                            Thank you.
+                        </p>
+                        <p>
+                            Our hearts go out to the people affected by the powerful
+                            earthquake that occurred in Japan's northernmost prefecture
+                            of Hokkaido early this morning.<br />
+                            This earthquake has caused blackout in the entire region,
+                            leaving millions of households without electricity. Due to
+                            the island-wide blackouts, PaintsChainer will have to suspend
+                            some of its functions, namely Canna and Line Simplify,
+                            starting from 16:00, Sept. 6, JST.<br />
+                            We apologize for any inconvenience this may cause you. We
+                            will appreciate your understanding on this matter.
+                        </p>
+                        <p>We have updated the PaintsChainer web site and added a new
+                            painting style "Canna". This model is particularly good at
+                            shading and lighting.</p>
+                        <p><a href="https://twitter.com/PaintsChainer/status/895601234895290369">The
+                                "Sketch Simplification" tool was released. This tool
+                                allows you to extract and refine the strokes of your
+                                sketches.</a></p>
+                    </div>
+                </div>
+                <div id="social-timeline">
+                    <h2>TWITTER TIMELINE</h2>
+                    <div class="box" style="height:600px; width:100%; overflow:scroll; background-color:white;">
+                        <div>
+                            <a class="twitter-timeline" href="https://twitter.com/PaintsChainer?ref_src=twsrc%5Etfw">Tweets
+                                by PaintsChainer</a>
+                            <script async src="https://platform.twitter.com/widgets.js"
+                                charset="utf-8"></script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="footer">
+        <div class="container">
+            <div class="staff">
+                <div class="provided-by">
+                    <h3>Provided by</h3>
+                    <a href="https://www.preferred-networks.jp/" target="_blank">
+                        <img src="static/images/PFN_logo.png" width="14"> Preferred
+                        Networks
+                    </a>
+                </div>
+                <div class="collaborated-by">
+                    <h3>Supported by</h3>
+                    <div class="horizontal-box">
+                        <p>
+                            <a href="https://sketch.pixiv.net/" target="_blank">
+                                <img src="static/images/pixivsketch-logo.png" height="16"
+                                    width="16"> pixiv Sketch
+                            </a></p>
+                        <p>
+                            <a href="https://www.sakura.ad.jp/koukaryoku/" target="_blank">
+                                <img src="static/images/koukaryoku-64.png" height="18"
+                                    width="18"> 高火力コンピューティング
+                            </a></p>
+                        <p>
+                            <a href="https://chainer.org/" target="_blank">
+                                <img src="static/images/chainer-64.png" height="18"
+                                    width="18"> Chainer
+                            </a>
+                        </p>
+                        <p>
+                            <a href="https://azure.microsoft.com/">
+                                <img src="static/images/azure_logo-64.png" height="17">
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tool">
+                <div class="logo">
+                    <a href="index_en.html">
+                        <img src="static/images/logo_white.svg" width="138" height="32" />
+                    </a>
+                </div>
+                <div class="bottom-nav">
+                    <span class="handle upload-button">
+                        <img src="static/images/upload_white.svg" />
+                        Upload
+                    </span>
+                    <span class="handle preset-button">
+                        <img src="static/images/brush_white.svg" />
+                        Colorize a sample image
+                    </span>
+                    <a class="handle" href="/webui/howto/">
+                        <img src="static/images/info_q_white.svg" />
+                        How to
+                    </a>
+                </div>
+                <div class="links">
+                    <div>
+                        <a href="/webui/terms/" target="_blank">Terms of Service</a>
+                    </div>
+                    <div>
+                        <a href="/webui/privacy/" target="_blank">Privacy Policy</a>
+                    </div>
+                    <div class="social">
+                        <a href="https://github.com/pfnet/PaintsChainer" target="_blank">
+                            <i class="fa fa-github-alt"></i>
+                        </a>
+                        <a href="https://twitter.com/paintschainer" target="_blank">
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                        <a href="https://facebook.com/PaintsChainer" target="_blank">
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <div class="modal fade" id="info-dialog" tabindex="-1" role="dialog" aria-labelledby="infoDialogLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="infoDialogLabel"><img src="static/images/paintschainer-64x64.png"
+                            width="24" style="display:inline" />&nbsp;Information</h4>
+                </div>
+                <div class="modal-body">
+                    <p><b>Welcome to PaintsChainer!</b></p>
+                    <p>Thank you for using our products and services.</p>
+                    <p>You need to agree to the following policy to use this service.</p>
+                    <p>Please read the terms carefully before using PaintsChainer.</p>
+                    <ul>
+                        <li><a href="/webui/terms/" target="_blank">Terms of Service</a></li>
+                        <li><a href="/webui/privacy/" target="_blank">Privacy Policy</a></li>
+                    </ul>
+                    <p>March 8, 2017</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="info-button">Agree</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        if (location.hostname.indexOf('.preferred.tech') > -1) {
+            // Sentry
+            Raven.config('https://9ea58920e9224cd4803001d7dd7c7c08@sentry.io/235845').install();
+
+            // Google Analytics
+            (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+            })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+            ga('create', 'UA-91036510-1', 'auto');
+            ga('send', 'pageview');
+        }
+    </script>
+
+    <div class="pixivsketchdraw" id="pxvsketch"></div>
+
+</body>
+
+</html>

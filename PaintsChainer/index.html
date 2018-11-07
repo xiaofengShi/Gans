@@ -1,18 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="utf-8">
-    <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="/images/favicon.ico">
-    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
-    <link rel="icon" type="image/png" href="https://Sketch2Colors-cdn.preferred.tech/images/Sketch2Colors-64x64.png" sizes="64x64">
-    <link rel="manifest" href="/manifest.json">
-    <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#c90000">
-    <meta name="apple-mobile-web-app-title" content="Sketch2Colors">
-    <meta name="application-name" content="Sketch2Colors">
-    <meta name="theme-color" content="#ffffff"> -->
     <title>Sketch2Colors</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+        crossorigin="anonymous">
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
     <!-- Canvas toBlob polyfill -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.6.0/js/canvas-to-blob.min.js"></script>
     <!-- jQuery -->
@@ -39,10 +37,10 @@
     <script src="paints_chainer.js?ver0.6"></script>
     <!-- fileend -->
     <style>
-      .wColorPicker-palettes-holder { white-space: nowrap; } /* wColorPicker workaround for Firefox */
+        .wColorPicker-palettes-holder { white-space: nowrap; } /* wColorPicker workaround for Firefox */
     </style>
     <style>
-      body {
+        body {
         margin-bottom: 36px;
       }
       .footer {
@@ -65,81 +63,103 @@
         color: #727272;
       }
     </style>
-  </head>
-  <body>
-    <nav class="navbar navbar-default navbar-static-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
-          </button>
-          <span class="navbar-brand"><img src="images/icon.png"" width="40" style="display:inline" /> Sketch2Colors</span>
+</head>
+
+<body>
+    <!-- <nav class="navbar navbar-default navbar-static-top"> -->
+    <nav class="navbar navbar-default">
+        <div class="nav-container container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span><span class="icon-bar"></span><span
+                        class="icon-bar"></span>
+                </button>
+                <div class="logo container-fluid ">
+                    <a href="index.html">
+                        <!-- <span class="navbar-brand"> -->
+                        <img src="images/icon.png" width="40" height="40" style="display:inline"
+                            alt="Sketch2Colors" />
+                        <!-- </span> -->
+                    </a>
+                </div>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <!-- <ul class="nav navbar-nav"> -->
+                <ul class="nav nav-tabs " role="tablist">
+                    <li class="active" target="_blank"><a href="index.html">Home</a></li>
+                    <li><a href="howto.html" target="_blank">How to use</a></li>
+                    <!-- <li><a href="//Sketch2Colors.preferred.tech/downloads/" target="_blank">Downloads</a></li>             -->
+                    <li><a href="//github.com/xiaofengShi/PaintsChainer" target="_blank">GitHub</a></li>
+                </ul>
+            </div>
         </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li class="active"><a>Home</a></li>
-            <li><a href="howto.html" >How to</a></li>
-            <!-- <li><a href="//Sketch2Colors.preferred.tech/downloads/" target="_blank">Downloads</a></li>             -->
-            <li><a href="//github.com/xiaofengShi/PaintsChainer" target="_blank">GitHub</a></li>
-          </ul>
-        </div>
-      </div>
     </nav>
+
     <div class="container">
-      <span class="label label label-info">Auto Sketch Colorization</span>
-      <div class="well" style="background-color: aliceblue">
-        <input id="blur_k" type="hidden"  />
+        <div class="alert alert-success alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                    aria-hidden="true">&times;</span></button>
+            <strong>Congratulation!!</strong> You are experiencing a novel feature.
+        </div>
+        <span class="label label-primary">Auto Sketch Colorization</span>
+        <div class="well well-lg" style="background-color: aliceblue">
+            <input id="blur_k" type="hidden" />
+            <div class="row">
+                <!-- <div class="col-md-6" style="margin-bottom: 10px;"> -->
+                <div class="col-sm-4">
+                    <i class="glyphicon glyphicon-upload"></i>Upload Image<input id="load_line_file"
+                        type="file" style="display: inline;">
+                </div>
+
+                <div class="col-sm-4">
+                    <button id="submit_color" class="btn btn-large btn-primary" disabled><i
+                            class="icon-edit icon-white"></i>AI Colorization</button>
+                    <span id="painting_status" style="display:none"></span>
+                </div>
+
+                <div class="col-sm-4">
+                    <button id="submit_sketch" class="btn btn-large btn-primary" disabled><i
+                            class="icon-edit icon-white"></i>AI sketch</button>
+                    <span id="sketch_status" style="display:none"></span>
+                </div>
+
+            </div>
+        </div>
+        <div class="row" style="margin-top:42px;">
+            <div class="col-xs-11 col-sm-6">
+                <div id="img_pane" style="display:none">
+                    <div id="wPaint" style="position:relative; background-color:rgba(0,0,255,0); border:solid 1px">
+                        <img id="background" style="max-width:100%" src="">
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-1 visible-xs-block"></div><!-- for dragging on narrow screen(smartphones)-->
+            <div class="col-xs-11 col-sm-6">
+                <img id="output" style="display:none; max-width:100%; border:solid 1px black">
+            </div>
+            <div class="col-xs-1 visible-xs-block"></div>
+        </div>
+
         <div class="row">
-          <div class="col-md-6" style="margin-bottom: 10px;">
-            <i class="glyphicon glyphicon-picture"></i> Set sketch: <input id="load_line_file" type="file" style="display: inline;">
-          </div>
-          <div class="col-md-6">
-            <button id="submit" class="btn btn-large btn-primary" disabled><i class="icon-edit icon-white"></i> Colorize</button>
-            <span id="painting_status" style="display:none"></span>
-          </div>
-        </div>
-      </div>
-      <div class="row" style="margin-top:42px;">
-        <div class="col-xs-11 col-sm-6">
-          <div id="img_pane" style="display:none">
-            <div id="wPaint" style="position:relative; background-color:rgba(0,0,255,0); border:solid 1px">
-              <img id="background" style="max-width:100%" src="">
+            <div class="col-md-6">
+                <span class="label label-warning">How To Use</span>
+                <div class="well well-small" style="background-color:#f5f5f5">
+                    <ol>
+                        <li>Select line drawing image </li>
+                        <li>Add hint information using color pen in left image</li>
+                        <li>Click the 'colorize' button</li>
+                    </ol>
+
+                    <span style="color:red">
+                        WARNING: gif &amp; alpha channel png is not supported, ensure
+                        three channel images
+                    </span>
+                </div>
             </div>
-          </div>
         </div>
-        <div class="col-xs-1 visible-xs-block"></div><!-- for dragging on narrow screen(smartphones)-->
-        <div class="col-xs-11 col-sm-6">
-          <img id="output" style="display:none; max-width:100%; border:solid 1px black">
-        </div>
-        <div class="col-xs-1 visible-xs-block"></div>
-      </div>
-      <div class="row">
-        <div class="col-md-6">
-
-          <span class="label label-success">How To Use</span>
-            <div class="well well-small" >
-              <ol>
-                <li>Select line drawing image
-                <li>Add hint information using color pen in left image</li>
-                <li>Click the 'colorize' button</li>
-              </ol>
-              <span style="color:gray">(gif &amp; alpha channel png is not supported)</li></span>
-            </div>
-          
-        </div>
-
-        <!-- <div class="col-md-6">
-          <span class="label label label-info">twitter timeline</span>
-          <div style="border:solid silver 1px;border-radius: 4px;">
-            <a class="twitter-timeline" href="https://twitter.com/hashtag/Sketch2Colors" data-widget-id="826017928868818945">#Sketch2Colors</a>
-            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-          </div>
-        </div> -->
-
-      </div>
     </div>
-    
-    
-  </body>
+</body>
+
 </html>

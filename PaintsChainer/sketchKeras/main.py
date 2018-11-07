@@ -21,7 +21,6 @@ import numpy as np
 import pickle
 from helper import *
 
-# plot_model(mod, to_file='model.png')
 
 GPU_OPTIONS = tf.GPUOptions(per_process_gpu_memory_fraction=0.9)
 DEVICE_CONFIG_GPU = tf.ConfigProto(device_count={"CPU": 7},
@@ -31,6 +30,7 @@ DEVICE_CONFIG_GPU = tf.ConfigProto(device_count={"CPU": 7},
 K.set_session(tf.Session(config=DEVICE_CONFIG_GPU))
 
 mod = load_model('./mod.h5')
+plot_model(mod, to_file='model.png', show_shapes=True)
 
 
 def get(path, save_path):
@@ -69,57 +69,57 @@ def get(path, save_path):
     # cv2.waitKey(0)
 
 
-file_list = []
+# file_list = []
+
+# def SearchFiles(root_dir, text):
+#     global file_list
+#     assert os.path.exists(root_dir)
+#     try:
+#         dir_list = os.listdir(root_dir)
+#         for files in dir_list:
+#             child_dir = os.path.join(root_dir, files)
+#             if os.path.isdir(child_dir):
+#                 SearchFiles(child_dir, text)
+#             elif os.path.isfile(child_dir) and os.path.splitext(child_dir)[1] in text:
+#                 file_list.append(child_dir)
+#     except Exception as e:
+#         print('ERROR：', e)
 
 
-def SearchFiles(root_dir, text):
-    global file_list
-    assert os.path.exists(root_dir)
-    try:
-        dir_list = os.listdir(root_dir)
-        for files in dir_list:
-            child_dir = os.path.join(root_dir, files)
-            if os.path.isdir(child_dir):
-                SearchFiles(child_dir, text)
-            elif os.path.isfile(child_dir) and os.path.splitext(child_dir)[1] in text:
-                file_list.append(child_dir)
-    except Exception as e:
-        print('ERROR：', e)
-
-
-def main():
-    global file_list
-    img_path = '/hd2/Share/xiaofeng/uniform_dataset/danbooru2017-sfw512px-torrent/danbooru2017/saved_path'
-    save_dir = '/hd2/Share/xiaofeng/uniform_dataset/danbooru2017-sfw512px-torrent/danbooru2017/sketch_path'
-    file_list_saved = '/hd2/Share/xiaofeng/uniform_dataset/danbooru2017-sfw512px-torrent/danbooru2017/file_names_from_saved.pkl'
-    if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
-    if os.path.exists(file_list_saved):
-        with open(file_list_saved, 'rb') as fi:
-            file_list = pickle.load(fi)
-    else:
-        SearchFiles(img_path, ['.jpg', '.png'])
-        # print(file_list[:10])
-        with open(file_list_saved, 'wb') as fi:
-            pickle.dump(file_list, fi)
-    total_num = len(file_list)
-    print('total nums is:', total_num)
-    start = datetime.datetime.now()
-    for i in range(total_num):
-        child_path = file_list[i].replace(img_path+'/', '')
-        saved_file = os.path.join(save_dir, child_path)
-        saved_dir = os.path.dirname(saved_file)
-        if not os.path.exists(saved_dir):
-            os.makedirs(saved_dir)
-        try:
-            get(file_list[i], saved_file)
-            if i % 100 == 0:
-                mid = datetime.datetime.now()
-                print('[{:^10d}]{:^5s}[{:^10d}]'.format(i, ':', total_num))
-                print('\t[{:^10s}]{:^5s}[{:010d}]'.format('Time', ':', (mid-start).seconds))
-        except Exception as e:
-            print(e)
+# def main():
+#     global file_list
+#     img_path = '/hd2/Share/xiaofeng/uniform_dataset/danbooru2017-sfw512px-torrent/danbooru2017/saved_path'
+#     save_dir = '/hd2/Share/xiaofeng/uniform_dataset/danbooru2017-sfw512px-torrent/danbooru2017/sketch_path'
+#     file_list_saved = '/hd2/Share/xiaofeng/uniform_dataset/danbooru2017-sfw512px-torrent/danbooru2017/file_names_from_saved.pkl'
+#     if not os.path.exists(save_dir):
+#         os.makedirs(save_dir)
+#     if os.path.exists(file_list_saved):
+#         with open(file_list_saved, 'rb') as fi:
+#             file_list = pickle.load(fi)
+#     else:
+#         SearchFiles(img_path, ['.jpg', '.png'])
+#         # print(file_list[:10])
+#         with open(file_list_saved, 'wb') as fi:
+#             pickle.dump(file_list, fi)
+#     total_num = len(file_list)
+#     print('total nums is:', total_num)
+#     start = datetime.datetime.now()
+#     for i in range(total_num):
+#         child_path = file_list[i].replace(img_path+'/', '')
+#         saved_file = os.path.join(save_dir, child_path)
+#         saved_dir = os.path.dirname(saved_file)
+#         if not os.path.exists(saved_dir):
+#             os.makedirs(saved_dir)
+#         try:
+#             get(file_list[i], saved_file)
+#             if i % 100 == 0:
+#                 mid = datetime.datetime.now()
+#                 print('[{:^10d}]{:^5s}[{:^10d}]'.format(i, ':', total_num))
+#                 print('\t[{:^10s}]{:^5s}[{:010d}]'.format('Time', ':', (mid-start).seconds))
+#         except Exception as e:
+#             print(e)
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    

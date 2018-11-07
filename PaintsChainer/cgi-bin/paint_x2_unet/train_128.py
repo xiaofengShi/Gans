@@ -201,6 +201,7 @@ class ganUpdater(chainer.training.StandardUpdater):
         cnn_optimizer.update(self.loss_cnn, self.cnn, x_out, t_out, y_target)
 
         x_out.unchain_backward()
+        
         y_fake = self.dis(x_out,  Variable(
             xp.ones(batchsize, dtype=np.int32)))
         y_real = self.dis(t_out,  Variable(
