@@ -23,8 +23,7 @@ def cvt2YUV(img):
 
 IMG_EXTENSIONS = [
     '.jpg', '.JPG', '.jpeg', '.JPEG',
-    '.png', '.PNG', '.ppm', '.PPM', '.bmp', '.BMP',
-]
+    '.png', '.PNG', '.ppm', '.PPM', '.bmp', '.BMP',]
 
 
 

@@ -121,7 +121,7 @@ The test results will be saved to a html file here: `./results/maps_cyclegan/lat
 
 ### pix2pix train/test
 
-![pix2pix](assets/pix2pix.png)
+<img src='assets/pix2pix.jpg' width=100%  height=100% align="center" >
 
 - Download a pix2pix dataset (e.g.facades):
 ```bash
@@ -141,6 +141,27 @@ python test.py --dataroot ./datasets/facades --name facades_pix2pix --model pix2
 The test results will be saved to a html file here: `./results/facades_pix2pix/test_latest/index.html`.
 
 You can find more scripts at `scripts` directory.
+
+## Sketch2paints
+
+- Train model for danbooru dataset
+
+  ```bash
+  python3 train.py --dataroot /hd2/Share/xiaofeng/uniform_dataset/danbooru2017-sfw512px-torrent/danbooru2017  --name danbooru_sketch2paints --model sketch2paints --dataset_mode paints --input_nc 3 --init_type kaiming --gpu_ids 0  --no_flip   --continue_train
+  ```
+
+- Pix2pix
+
+  ```bash
+  python3 train.py --dataroot /hd2/Share/xiaofeng/uniform_dataset/danbooru2017-sfw512px-torrent/danbooru2017  --name danbooru_pix2pix --model pix2pix --dataset_mode paints --input_nc 3 --init_type kaiming --gpu_ids 0  --no_flip --continue_train
+  ```
+
+- Cyclegan
+
+  ```bash
+  python3 train.py --dataroot /hd2/Share/xiaofeng/uniform_dataset/danbooru2017-sfw512px-torrent/danbooru2017  --name danbooru_cyclegan --model cycle_gan --dataset_mode paints --input_nc 3 --init_type kaiming --gpu_ids 0  --no_flip   --continue_train
+  ```
+
 
 ### Apply a pre-trained model (CycleGAN)
 - You can download a pretrained model (e.g. horse2zebra) with the following script:

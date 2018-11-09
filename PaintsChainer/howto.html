@@ -14,7 +14,7 @@
     <meta name="application-name" content="Sketch2Colors">
     <meta name="theme-color" content="#ffffff"> -->
 
-    <title>Sketch2Colors</title>
+    <title>小画匠</title>
 
     <!-- jQuery -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
@@ -56,8 +56,8 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-default navbar-static-top">
-        <div class="container">
+    <nav class="navbar navbar-default">
+        <div class="nav-container container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
                     data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -65,34 +65,23 @@
                     <span class="icon-bar"></span><span class="icon-bar"></span><span
                         class="icon-bar"></span>
                 </button>
-                <span class="navbar-brand"><img src="images/icon.png"" width=" 40" style="display:inline" />
-                    Sketch2Colors</span>
+                <div class="logo container-fluid ">
+                    <a href="index.html">
+                        <!-- <span class="navbar-brand"> -->
+                        <img src="images/icon.png" width="40" height="40" style="display:inline"
+                            alt="Sketch2Colors" />
+                        <!-- </span> -->
+                    </a>
+                </div>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li><a href="index.html">Home</a></li>
-                    <li class="active"><a>How to</a></li>
-                    <!-- <li><a href="//Sketch2Colors.preferred.tech/downloads/" target="_blank">Downloads</a></li> -->
-                    <li><a href="//github.com/xiaofengShi/PaintsChainer" target="_blank">GitHub</a></li>
-                </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    <li>
-                        <a href="https://twitter.com/Sketch2Colors" target="_blank" style="padding: 6px 4px;">
-                            <span class="fa-stack fa-lg" style="color:#55acee;">
-                                <i class="fa fa-square-o fa-stack-2x"></i>
-                                <i class="fa fa-twitter fa-stack-1x"></i>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://facebook.com/Sketch2Colors" target="_blank"
-                            style="padding: 6px 4px;">
-                            <span class="fa-stack fa-lg" style="color:#3b5998;">
-                                <i class="fa fa-square-o fa-stack-2x"></i>
-                                <i class="fa fa-facebook fa-stack-1x"></i>
-                            </span>
-                        </a>
-                    </li>
+                <!-- <ul class="nav navbar-nav"> -->
+                <ul class="nav nav-tabs " role="tablist">
+                    <li target="_blank"><a href="index.html">Home</a></li>
+                    <li class="active" target="_blank"><a href="howto.html">How to use</a></li>
+                    <li target="_blank"><a href="havefun.html">Have Fun</a></li>
+                    <!-- <li><a href="//Sketch2Colors.preferred.tech/downloads/" target="_blank">Downloads</a></li>             -->
+                    <li target="_blank"><a href="//github.com/xiaofengShi/Gans/tree/master/PaintsChainer">GitHub</a></li>
                 </ul>
             </div>
         </div>
@@ -109,9 +98,10 @@
                 </div>
                 <div class="inline">
                     <div class="step">
-                        <p class="instruction">Select a line drawing image</p>
-                        <a href="images/1.jpg">
-                            <img alt="Select line drawing image" src="images/1.jpg" />
+                        <p class="instruction">Select a pending color line image or
+                            drawing image</p>
+                        <a href="images/upload.png">
+                            <img alt="Select line drawing image" src="images/upload.png" />
                         </a>
                     </div>
                 </div>
@@ -125,11 +115,13 @@
                 </div>
                 <div class="inline">
                     <div class="step">
-                        <p class="instruction">Colorization will start automatically
+                        <p class="instruction">If you use the line drawing service,
+                            please click the "AI Colorization" button after uploading the
+                            picture.
                             atter selecting an image</p>
-                        <a href="images/2.jpg">
+                        <a href="images/sketch2color_runing.png">
                             <img alt="Colorization will start automaticly after select an image"
-                                src="images/2.jpg" />
+                                src="images/sketch2color_runing.png" />
                         </a>
                     </div>
                 </div>
@@ -143,11 +135,13 @@
                 </div>
                 <div class="inline">
                     <div class="step">
-                        <p class="instruction">Add hint information using color pen in
-                            left image</p>
-                        <a href="images/3.jpg">
+                        <p class="instruction">If you use color guide customization to
+                            generate a color map, click the "AI Colorization" button
+                            after adding hint information using color pen in the left
+                            image.</p>
+                        <a href="images/sketch2color_guide_runing.png">
                             <img alt="Add hint information using color pen in left image"
-                                src="images/3.jpg" />
+                                src="images/sketch2color_guide_runing.png" />
                         </a>
                     </div>
                 </div>
@@ -161,15 +155,26 @@
                 </div>
                 <div class="inline">
                     <div class="step">
-                        <p class="instruction">Click the 'colorize' button to recolorize</p>
-                        <a href="images/4.jpg">
-                            <img alt="Click the 'colorize' button" src="images/4.jpg" />
+                        <p class="instruction">If you want to use the color picture
+                            transfer service, please upload the color picture and click
+                            the "AI sketch" button.</p>
+                        <a href="images/color2sketch_runing.png">
+                            <img alt="Click the 'AI sketch" src="images/color2sketch_runing.png" />
                         </a>
                     </div>
                 </div>
             </div>
+            <div class="alert alert-success " role="alert">
+                <a href="havefun.html" class="alert-link" style="color:magenta"> <strong>Congratulation!!
+                        You already know how to use the service. Have fun...</strong></a>
+
+            </div>
         </div>
+
+
+
     </div>
+
 
 </body>
 

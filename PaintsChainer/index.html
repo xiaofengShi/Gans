@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Sketch2Colors</title>
+    <title>小画匠</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
         integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
         crossorigin="anonymous">
@@ -11,155 +11,61 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
         integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
         crossorigin="anonymous"></script>
-    <!-- Canvas toBlob polyfill -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.6.0/js/canvas-to-blob.min.js"></script>
-    <!-- jQuery -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <!-- jQuery Cookie -->
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
-    <!-- jQuery UI -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-    <!-- wColorPicker -->
-    <link rel="stylesheet" href="wPaint/lib/wColorPicker.min.css">
-    <script src="wPaint/lib/paletteGenerator.js"></script>
-    <script src="wPaint/lib/wColorPicker.min.js?ver3"></script>
-    <!-- wPaint -->
-    <link rel="stylesheet" href="wPaint/wPaint.min.css">
-    <script src="wPaint/wPaint.min.js"></script>
-    <script src="wPaint/plugins/main/src/wPaint.menu.main.js"></script>
-    <!-- bootstrap -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <!-- font-awesome -->
-    <link rel="stylesheet" href="css/font-awesome.css">
-    <!-- main -->
-    <script src="paints_chainer.js?ver0.6"></script>
-    <!-- fileend -->
-    <style>
-        .wColorPicker-palettes-holder { white-space: nowrap; } /* wColorPicker workaround for Firefox */
-    </style>
-    <style>
-        body {
-        margin-bottom: 36px;
-      }
-      .footer {
-        position: fixed;
-        bottom: 0;
-        width: 100%;
-        /* Set the fixed height of the footer here */
-        height: 36px;
-        background-color: #f5f5f5;
-        font-size: 85%;
-      }
-      .container .text-muted {
-        margin: 8px 0;
-      }
-      .footer > .container {
-        padding-right: 15px;
-        padding-left: 15px;
-      }
-      .footer a {
-        color: #727272;
-      }
-    </style>
 </head>
 
 <body>
-    <!-- <nav class="navbar navbar-default navbar-static-top"> -->
-    <nav class="navbar navbar-default">
-        <div class="nav-container container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
-                    data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span><span class="icon-bar"></span><span
-                        class="icon-bar"></span>
-                </button>
-                <div class="logo container-fluid ">
-                    <a href="index.html">
-                        <!-- <span class="navbar-brand"> -->
-                        <img src="images/icon.png" width="40" height="40" style="display:inline"
-                            alt="Sketch2Colors" />
-                        <!-- </span> -->
-                    </a>
-                </div>
-            </div>
-            <div id="navbar" class="navbar-collapse collapse">
-                <!-- <ul class="nav navbar-nav"> -->
-                <ul class="nav nav-tabs " role="tablist">
-                    <li class="active" target="_blank"><a href="index.html">Home</a></li>
-                    <li><a href="howto.html" target="_blank">How to use</a></li>
-                    <!-- <li><a href="//Sketch2Colors.preferred.tech/downloads/" target="_blank">Downloads</a></li>             -->
-                    <li><a href="//github.com/xiaofengShi/PaintsChainer" target="_blank">GitHub</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <div class="jumbotron">
+        <div class="container">
+            <!-- <div class="page-header"> -->
+            <h1>小画匠</h1>
+            <!-- </div> -->
+            <p>如果你想让彩色图片变为素描图，如果你想给你的线稿填充上色彩，
+                在这里让AI帮你实现。本项目利用计算机视觉领域内当前最前沿的深度学习算法，
+                实现了线稿与彩色图片之间的相互转化。本模型处于目前尚处于测试版，仍存在些许问题，敬请海涵...</p>
+            </p><a class="btn btn-primary btn-lg" href="howto.html" role="button">Learn
+                more</a></p>
 
-    <div class="container">
-        <div class="alert alert-success alert-dismissible" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
-                    aria-hidden="true">&times;</span></button>
-            <strong>Congratulation!!</strong> You are experiencing a novel feature.
-        </div>
-        <span class="label label-primary">Auto Sketch Colorization</span>
-        <div class="well well-lg" style="background-color: aliceblue">
-            <input id="blur_k" type="hidden" />
-            <div class="row">
-                <!-- <div class="col-md-6" style="margin-bottom: 10px;"> -->
-                <div class="col-sm-4">
-                    <i class="glyphicon glyphicon-upload"></i>Upload Image<input id="load_line_file"
-                        type="file" style="display: inline;">
-                </div>
-
-                <div class="col-sm-4">
-                    <button id="submit_color" class="btn btn-large btn-primary" disabled><i
-                            class="icon-edit icon-white"></i>AI Colorization</button>
-                    <span id="painting_status" style="display:none"></span>
-                </div>
-
-                <div class="col-sm-4">
-                    <button id="submit_sketch" class="btn btn-large btn-primary" disabled><i
-                            class="icon-edit icon-white"></i>AI sketch</button>
-                    <span id="sketch_status" style="display:none"></span>
-                </div>
-
-            </div>
-        </div>
-        <div class="row" style="margin-top:42px;">
-            <div class="col-xs-11 col-sm-6">
-                <div id="img_pane" style="display:none">
-                    <div id="wPaint" style="position:relative; background-color:rgba(0,0,255,0); border:solid 1px">
-                        <img id="background" style="max-width:100%" src="">
+            <div class="row" style="padding:50px 0">
+                <div class="col-sm-6 col-md-4">
+                    <div class="thumbnail">
+                        <img src="images/sketch2color.jpeg" alt="sketch to color">
+                        <div class="caption">
+                            <h3 style="color:navy">线稿转彩色</h3>
+                            <p style="text-align:justify; text-justify:inter-ideograph;">输入一张线稿图片，AI会立即帮您为这张图片填充上色彩。算法模型会自动识别输入图片中的线稿并为其填充颜色，请输入轮廓清晰的线稿。</p>
+                            <!-- <p>
+                                        <a href="#" class="btn btn-primary" role="button">Try It</a>
+                                    </p> -->
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-xs-1 visible-xs-block"></div><!-- for dragging on narrow screen(smartphones)-->
-            <div class="col-xs-11 col-sm-6">
-                <img id="output" style="display:none; max-width:100%; border:solid 1px black">
-            </div>
-            <div class="col-xs-1 visible-xs-block"></div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-6">
-                <span class="label label-warning">How To Use</span>
-                <div class="well well-small" style="background-color:#f5f5f5">
-                    <ol>
-                        <li>Select line drawing image </li>
-                        <li>Add hint information using color pen in left image</li>
-                        <li>Click the 'colorize' button</li>
-                    </ol>
-
-                    <span style="color:red">
-                        WARNING: gif &amp; alpha channel png is not supported, ensure
-                        three channel images
-                    </span>
+                <div class="col-sm-6 col-md-4">
+                    <div class="thumbnail">
+                        <img src="images/sketch2color1.jpeg" alt="sketch to color1">
+                        <div class="caption">
+                            <h3 style="color:navy">添加引导色</h3>
+                            <p>如果您对输出的模型不满意，您可以按照自己的设想为线稿图添加引导颜色。如图所示，为线稿添加白色引导色，会生成白色背景上色图片。</p>
+                            <!-- <p>
+                                        <a href="#" class="btn btn-primary" role="button">Try It</a>
+                                    </p> -->
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-4">
+                    <div class="thumbnail">
+                        <img src="images/color2sketch.jpeg" alt="sketch to color1">
+                        <div class="caption">
+                            <h3 style="color:navy">彩图转线稿</h3>
+                            <p style="text-align:justify; text-justify:inter-ideograph;">输入一张彩色图片，AI技术同样会根据这张图片生成对应的线稿图。目前该功能不仅支持彩色动漫照片，同样支持彩色实景照片，请尽量使拖背景相对纯净。</p>
+                            <!-- <p>
+                                <a href="#" class="btn btn-primary" role="button">Try It</a>
+                            </p> -->
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
 </body>
 
 </html>

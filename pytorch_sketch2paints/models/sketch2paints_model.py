@@ -31,7 +31,7 @@ class Sketch2paintsModel(BaseModel):
             parser.add_argument('--lambda_B', type=float, default=10.0,
                                 help='weight for cycle loss (B -> A -> B)')
             parser.add_argument(
-                '--lambda_identity', type=float, default=0.5,
+                '--lambda_identity', type=float, default=0,
                 help='use identity mapping. Setting lambda_identity other than 0 has an effect of scaling the weight of the identity mapping loss. For example, if the weight of the identity loss should be 10 times smaller than the weight of the reconstruction loss, please set lambda_identity = 0.1')
 
         return parser
@@ -40,10 +40,12 @@ class Sketch2paintsModel(BaseModel):
         BaseModel.initialize(self, opt)
 
         # specify the training losses you want to print out. The program will call base_model.get_current_losses
+        # self.loss_names = ['D_A', 'G_A', 'cycle_A', 'idt_A', 'D_B', 'G_B',
+        #                    'cycle_B', 'idt_B', 'G_A_Fake', 'G_B_Fake', 'cycle_A_A', 'cycle_B_B','D_A_A','D_B_B']
         self.loss_names = ['D_A', 'G_A', 'cycle_A', 'idt_A', 'D_B', 'G_B',
-                           'cycle_B', 'idt_B', 'G_A_FALSE', 'G_B_FALSE', 'cycle_A_A', 'cycle_B_B']
+                           'cycle_B', 'idt_B', 'G_A_Fake', 'G_B_Fake', 'cycle_A_A','D_B_B']
         # specify the images you want to save/display. The program will call base_model.get_current_visuals
-        visual_names_A = ['real_A', 'fake_B', 'rec_A']
+        visual_names_A = ['real_A', 'fake_B', 'rec_A','ori_A']
         visual_names_B = ['real_B', 'fake_A', 'rec_B']
         if self.isTrain and self.opt.lambda_identity > 0.0:
             visual_names_A.append('idt_A')
@@ -99,6 +101,8 @@ class Sketch2paintsModel(BaseModel):
         if self.isTrain:
             self.fake_A_pool = ImagePool(opt.pool_size)
             self.fake_B_pool = ImagePool(opt.pool_size)
+            self.rec_A_pool = ImagePool(opt.pool_size)
+            self.rec_B_pool = ImagePool(opt.pool_size)
             # define loss functions
             self.criterionGAN = networks.GANLoss(use_lsgan=not opt.no_lsgan).to(self.device)
             self.criterionCycle = torch.nn.L1Loss()
@@ -122,7 +126,7 @@ class Sketch2paintsModel(BaseModel):
         AtoB = self.opt.direction == 'AtoB'
         self.real_A = input['A' if AtoB else 'B'].to(self.device)
         self.real_B = input['B' if AtoB else 'A'].to(self.device)
-
+        self.ori_A=input['A_O'].to(self.device)
         self.image_paths = input['A_paths' if AtoB else 'B_paths']
 
     def forward(self):
@@ -154,7 +158,9 @@ class Sketch2paintsModel(BaseModel):
 
     def backward_D_B(self):
         fake_A = self.fake_A_pool.query(self.fake_A)
-        self.loss_D_B = self.backward_D_basic(self.netD_B, self.real_A, fake_A)
+        self.loss_D_B = self.backward_D_basic(self.netD_B, self.ori_A, fake_A)
+        rec_A = self.rec_A_pool.query(self.rec_A)
+        self.loss_D_B_B = self.backward_D_basic(self.netD_B, self.ori_A, rec_A)
 
     def backward_G(self):
         lambda_idt = self.opt.lambda_identity
@@ -164,47 +170,58 @@ class Sketch2paintsModel(BaseModel):
         if lambda_idt > 0:
             # G_A should be identity if real_B is fed.
             self.idt_A = self.netG_A(self.real_B)
-            # eroor between realB and fakeA
+            # eroor between realB and idt_A
             self.loss_idt_A = self.criterionIdt(self.idt_A, self.real_B) * lambda_B * lambda_idt
             # G_B should be identity if real_A is fed.
             self.idt_B = self.netG_B(self.real_A)
+            # eroor between realA and idt_B
             self.loss_idt_B = self.criterionIdt(self.idt_B, self.real_A) * lambda_A * lambda_idt
         else:
             self.loss_idt_A = 0
             self.loss_idt_B = 0
 
-        # GAN loss D_A(G_A(A)) TRUE
+        """  
+        Generator should eventually be able to fool the discriminator about the authencity of it's generated images.
+        This can done if the recommendation by discriminator for the generated images is as close to 1 as possible. 
+        So generator would like to minimize  (DiscriminatorB(GeneratorA→B(a))−1)2 and same goes for B,So the loss is:
+        loss_G_A  and  loss_G_B
+        """
+        # GAN loss D_A(G_A(A)) 1
         self.loss_G_A = self.criterionGAN(self.netD_A(self.fake_B), True)
         # Gan loss D_A(G_A(A)) FALSE
-        self.loss_G_A_FALSE = self.criterionGAN(self.netD_A(self.fake_B), False)
-        # Gan loss D_A(B) FALSE
-        self.loss_G_B_FALSE = self.criterionGAN(self.netD_A(self.real_B), False)
+        self.loss_G_A_Fake = self.criterionGAN(self.netD_A(self.rec_B), True)
         # GAN loss D_B(G_B(B))
         self.loss_G_B = self.criterionGAN(self.netD_B(self.fake_A), True)
+        # Gan loss D_A(B) FALSE
+        self.loss_G_B_Fake = self.criterionGAN(self.netD_B(self.rec_A), True)
         # Forward cycle loss
-        self.loss_cycle_A = self.criterionCycle(self.rec_A, self.real_A) * lambda_A
+        self.loss_cycle_A = self.criterionCycle(self.fake_A, self.ori_A) * lambda_A*5
         # Backward cycle loss for recA and fakeA
-        self.loss_cycle_A_A = self.criterionCycle(self.rec_A, self.fake_A) * lambda_A*0.1
+        self.loss_cycle_A_A = self.criterionCycle(self.rec_A, self.ori_A) * lambda_A*5
         # Backward cycle loss
-        self.loss_cycle_B = self.criterionCycle(self.rec_B, self.real_B) * lambda_B
+        self.loss_cycle_B = self.criterionCycle(self.fake_B, self.real_B) * lambda_B
         # Backward cycle loss for recB and fakeB
-        self.loss_cycle_B_B = self.criterionCycle(self.rec_B, self.fake_B) * lambda_B*0.1
+        # self.loss_cycle_B_B = self.criterionCycle(self.rec_B, self.fake_B) * lambda_B
 
         # combined loss
-        self.loss_G = self.loss_G_A + self.loss_G_B + self.loss_cycle_A + self.loss_cycle_B + self.loss_idt_A + \
-            self.loss_idt_B + (self.loss_cycle_A_A + self.loss_cycle_B_B+self.loss_G_A_FALSE+self.loss_G_B_FALSE)*0
+        # self.loss_G = self.loss_G_A + self.loss_G_B + self.loss_cycle_A + self.loss_cycle_B + self.loss_idt_A + \
+        #     self.loss_idt_B + self.loss_cycle_A_A + self.loss_cycle_B_B+self.loss_G_A_Fake+self.loss_G_B_Fake
+        self.loss_G = self.loss_G_A+self.loss_cycle_A_A+self.loss_cycle_B + \
+            self.loss_G_A_Fake+self.loss_G_B+self.loss_G_B_Fake+self.loss_cycle_A
         self.loss_G.backward()
 
     def optimize_parameters(self):
         # forward
         self.forward()
         # G_A and G_B
+        # Only train G net
         self.set_requires_grad([self.netD_A, self.netD_B], False)
         # self.set_requires_grad([self.netD_A], False)
         self.optimizer_G.zero_grad()
         self.backward_G()
         self.optimizer_G.step()
         # D_A and D_B
+        # Train D net
         self.set_requires_grad([self.netD_A, self.netD_B], True)
         self.optimizer_D.zero_grad()
         self.backward_D_A()
