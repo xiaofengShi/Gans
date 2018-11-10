@@ -170,7 +170,7 @@ if "__main__" in __name__:
                         help='set process mode')
     # other mode "post_server" "paint_server"
 
-    parser.add_argument('--port', '-p', type=int, default=5000, help='using port')
+    parser.add_argument('--port', '-p', type=int, default=9172, help='using port')
     parser.add_argument('--debug', dest='debug', action='store_true')
     parser.set_defaults(feature=False)
 
